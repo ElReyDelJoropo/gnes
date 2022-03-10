@@ -1,5 +1,6 @@
 #pragma once
 
+#include "interrupt_line.hpp"
 #include "mmc.hpp"
 #include "types.hpp"
 
@@ -13,7 +14,7 @@ enum ADDRESSING_MODE {
     ABSOLUTE_Y,
     INDEXED_INDIRECT,
     INDIRECT_INDEXED,
-    IMPLICIT,
+    IMPLIED,
     ACCUMULATOR,
     IMMEDIATE,
     ABSOLUTE,
@@ -23,21 +24,29 @@ enum ADDRESSING_MODE {
 
 class Cpu {
   public:
-    Cpu(Mmc &);
+    Cpu(Mmc &, InterruptLine &);
 
     void step();
 
   private:
     static constexpr unsigned int CLOCK_FREQUENCY = 1789773;
-        static constexpr std::uint16_t NMI_ADDRESS = 0xFFFA;
-        static constexpr std::uint16_t RESET_ADDRESS = 0xFFFC;
-        static constexpr std::uint16_t IRQ_ADDRESS = 0xFFFE;
+    static constexpr std::uint16_t NMI_ADDRESS = 0xFFFA;
+    static constexpr std::uint16_t RESET_ADDRESS = 0xFFFC;
+    static constexpr std::uint16_t IRQ_ADDRESS = 0xFFFE;
+
+    static const struct instruction {
+        const char *name;
+        void (Cpu::*func)(std::uint16_t);
+        ADDRESSING_MODE addressing_mode;
+        int size;
+        int cycle_lenght;
+    } instruction_lookup_table[0xFF];
 
     ubyte _X, _Y; // X and Y registers
     ubyte _SP;    // Stack pointer
     ubyte _A;     // Accumulator
-    ubyte _PC;    // Program counter
-    //XXX: An obscure but efficient approach
+    std::uint16_t _PC;    // Program counter
+    // XXX: An obscure but efficient approach
     union {
         struct {
             ubyte carry : 1;
@@ -52,10 +61,14 @@ class Cpu {
         ubyte data;
     } _P;
 
+    ubyte _opcode;
+
     int _cycles;
     Mmc &_mmc;
+    InterruptLine &_interrupt_line;
 
     void powerUp();
+    void reset();
 
     void push(ubyte);
     void push16(std::uint16_t);
@@ -63,6 +76,7 @@ class Cpu {
     ubyte pull();
     std::uint16_t pull16();
 
+    std::uint16_t translateAddress(ADDRESSING_MODE);
     void handleInterrupt();
 };
 } // namespace gnes
