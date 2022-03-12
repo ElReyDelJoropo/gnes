@@ -5,12 +5,12 @@
 #include <cerrno>
 #include <cstdint>
 using std::uint16_t;
-#include <cstdio>
-using std::fprintf;
 #include <cstring>
 using std::strerror;
 #include <fstream>
 using std::ifstream;
+#include <iostream>
+using std::cerr;
 #include <memory>
 using std::make_unique;
 #include <string>
@@ -18,8 +18,8 @@ using std::string;
 
 using namespace gnes;
 
-ubyte Cartrigde::read(uint16_t a) { return _mapper->read(a); }
-void Cartrigde::write(uint16_t a, ubyte b) { _mapper->write(a, b); }
+uByte Cartrigde::read(uint16_t a) { return _mapper->read(a); }
+void Cartrigde::write(uint16_t a, uByte b) { _mapper->write(a, b); }
 
 void Cartrigde::load(string &game_path) {
     ifstream file;
@@ -29,30 +29,31 @@ void Cartrigde::load(string &game_path) {
     file.open(game_path, std::ios::in | std::ios::binary);
 
     if (!file) {
-        fprintf(stderr, "Unable to open the file: %s", std::strerror(errno));
-        _interrupt_line.setInterrupt(ERROR);
+        // fprintf(stderr, "Unable to open the file: %s", std::strerror(errno));
+        cerr << "Unable to open the file: " << std::strerror(errno);
+        _interrupt_line.setInterrupt(InterruptType::Error);
         return;
     }
     sz = getRomSize(file);
     file.read(header, 16);
     if (file.gcount() < 16) {
-        fprintf(stderr,
-                "An error had ocurred: posible corrupted rom, invalid header");
-        _interrupt_line.setInterrupt(ERROR);
+        cerr << "Error: Corrupted rom";
+        _interrupt_line.setInterrupt(InterruptType::Error);
         return;
     }
     // XXX: I could add some error codes to give a better error message
     if (parseHeader(header) == -1) {
-        fprintf(stderr, "An error had ocurred: invalid header");
-        _interrupt_line.setInterrupt(ERROR);
+        cerr << "Invalid header";
+        _interrupt_line.setInterrupt(InterruptType::Error);
         return;
     }
     _raw_data.resize(sz);
-    file.read(_raw_data.data(), sz);
+    // XXX: Could I avoid this cast?
+    file.read(reinterpret_cast<ifstream::char_type *>(_raw_data.data()), sz);
     if (createMapper() == -1) {
-        fprintf(stderr, "An error had ocurred: mapper #%d is not supported",
-                _rom_info.mapper_number);
-        _interrupt_line.setInterrupt(ERROR);
+        cerr << "Error: mapper #" << _rom_info.mapper_number
+             << " not supported";
+        _interrupt_line.setInterrupt(InterruptType::Error);
     }
 }
 std::ios::pos_type Cartrigde::getRomSize(ifstream &file) {
@@ -85,7 +86,8 @@ int Cartrigde::parseHeader(char header[16]) {
 int Cartrigde::createMapper() {
     switch (_rom_info.mapper_number) {
     case 0:
-        _mapper = make_unique<Mapper_000>(&_rom_info, _raw_data);
+        _mapper =
+            make_unique<Mapper_000>(&_rom_info, _interrupt_line, _raw_data);
         return 0;
     default:
         return -1;

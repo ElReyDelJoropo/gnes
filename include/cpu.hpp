@@ -6,20 +6,20 @@
 
 namespace gnes {
 
-enum ADDRESSING_MODE {
-    ZERO_PAGE,
-    ZERO_PAGE_X,
-    ZERO_PAGE_Y,
-    ABSOLUTE_X,
-    ABSOLUTE_Y,
-    INDEXED_INDIRECT,
-    INDIRECT_INDEXED,
-    IMPLIED,
-    ACCUMULATOR,
-    IMMEDIATE,
-    ABSOLUTE,
-    RELATIVE,
-    INDIRECT
+enum AddressingMode {
+    ZeroPage,
+    ZeroPageX,
+    ZeroPageY,
+    AbsoluteX,
+    AbsoluteY,
+    IndexedIndirect,
+    IndirectIndexed,
+    Implied,
+    Accumulator,
+    Immediate,
+    Absolute,
+    Relative,
+    Indirect
 };
 
 class Cpu {
@@ -37,31 +37,42 @@ class Cpu {
     static const struct instruction {
         const char *name;
         void (Cpu::*func)(std::uint16_t);
-        ADDRESSING_MODE addressing_mode;
+        AddressingMode addressing_mode;
         int size;
         int cycle_lenght;
     } instruction_lookup_table[0xFF];
 
-    ubyte _X, _Y; // X and Y registers
-    ubyte _SP;    // Stack pointer
-    ubyte _A;     // Accumulator
+    uByte _X, _Y; // X and Y registers
+    uByte _SP;    // Stack pointer
+    uByte _A;     // Accumulator
     std::uint16_t _PC;    // Program counter
     // XXX: An obscure but efficient approach
     union {
         struct {
-            ubyte carry : 1;
-            ubyte zero : 1;
-            ubyte interrupt_disable : 1;
-            ubyte decimal : 1;
-            ubyte brk : 1;
-            ubyte unused : 1;
-            ubyte overflow : 1;
-            ubyte negative : 1;
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            uByte carry : 1;
+            uByte zero : 1;
+            uByte interrupt_disable : 1;
+            uByte decimal : 1;
+            uByte brk : 1;
+            uByte unused : 1;
+            uByte overflow : 1;
+            uByte negative : 1;
+#else
+            uByte negative : 1;
+            uByte overflow : 1;
+            uByte unused : 1;
+            uByte brk : 1;
+            uByte decimal : 1;
+            uByte interrupt_disable : 1;
+            uByte zero : 1;
+            uByte carry : 1;
+#endif
         };
-        ubyte data;
+        uByte data;
     } _P;
 
-    ubyte _opcode;
+    uByte _opcode;
 
     int _cycles;
     Mmc &_mmc;
@@ -70,13 +81,17 @@ class Cpu {
     void powerUp();
     void reset();
 
-    void push(ubyte);
+    void push(uByte);
     void push16(std::uint16_t);
 
-    ubyte pull();
+    uByte pull();
     std::uint16_t pull16();
 
-    std::uint16_t translateAddress(ADDRESSING_MODE);
+    std::uint16_t translateAddress(AddressingMode);
     void handleInterrupt();
+
+    //Instructions
+    void ADC(std::uint16_t);
+    void AND(std::uint16_t);
 };
 } // namespace gnes

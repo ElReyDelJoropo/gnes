@@ -5,12 +5,12 @@ namespace gnes {
 
 class Mmc {
   public:
-    ubyte read(std::uint16_t);
+    uByte read(std::uint16_t);
     std::uint16_t read16(std::uint16_t);
-    void write(std::uint16_t, ubyte);
+    void write(std::uint16_t, uByte);
 
   private:
-    ubyte _ram[0x800];
+    uByte _ram[0x800];
 
     void powerUp();
     

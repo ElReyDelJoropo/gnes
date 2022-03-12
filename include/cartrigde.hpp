@@ -20,7 +20,7 @@ struct RomInfo {
     bool uses_CHR_RAM;
     bool VS_Unisystem;
     bool play_choice_10;
-    ubyte nes_20_format;
+    uByte nes_20_format;
     bool tv_system;
 };
 
@@ -29,18 +29,17 @@ class Cartrigde {
     Cartrigde(InterruptLine &);
     void load(std::string &);
 
-    ubyte read(std::uint16_t);
-    void write(std::uint16_t, ubyte);
+    uByte read(std::uint16_t);
+    void write(std::uint16_t, uByte);
 
   private:
     InterruptLine &_interrupt_line;
     std::unique_ptr<Mapper> _mapper;
     RomInfo _rom_info;
-    std::vector<byte> _raw_data;
+    std::vector<uByte> _raw_data;
 
     int createMapper();
     int parseHeader(char[16]);
-    std::ios::pos_type getRomSize(std::ifstream &);  
-    
+    std::ios::pos_type getRomSize(std::ifstream &);
 };
 } // namespace gnes

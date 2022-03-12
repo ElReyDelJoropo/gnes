@@ -9,7 +9,7 @@ void Cpu::powerUp() {
 }
 void Cpu::reset() {
     // TODO: silence APU
-    _interrupt_line.setInterrupt(RESET);
+    _interrupt_line.setInterrupt(InterruptType::Reset);
 }
 void Cpu::step() {
     uint16_t address;
@@ -24,48 +24,48 @@ void Cpu::step() {
     _cycles += instruction_lookup_table[_opcode].cycle_lenght;
 }
 
-uint16_t Cpu::translateAddress(ADDRESSING_MODE mode) {
+uint16_t Cpu::translateAddress(AddressingMode mode) {
     //_PC will pointing byte after opcode
     switch (mode) {
     // Zero page and relative addressing fetch the address in the same way, but
     // relative will use this operand as signed integer
-    case ZERO_PAGE:
-    case RELATIVE:
+    case ZeroPage:
+    case Relative:
         return _mmc.read(_PC);
-    case ZERO_PAGE_X:
+    case ZeroPageX:
         return _mmc.read(_PC) + _X & 0xFF; // Wrapped around
-    case ZERO_PAGE_Y:
+    case ZeroPageY:
         return _mmc.read(_PC) + _Y & 0xFF;
-    case ABSOLUTE:
+    case Absolute:
         return _mmc.read16(_PC);
-    case ABSOLUTE_X:
+    case AbsoluteX:
         return _mmc.read16(_PC) + _X;
-    case ABSOLUTE_Y:
+    case AbsoluteY:
         return _mmc.read16(_PC) + _Y;
-    case INDIRECT:
+    case Indirect:
         return _mmc.read16(_mmc.read16(_PC));
-    case INDEXED_INDIRECT:
+    case IndexedIndirect:
         return _mmc.read16(_mmc.read(_PC) + _X);
-    case INDIRECT_INDEXED:
+    case IndirectIndexed:
         return _mmc.read16(_mmc.read(_PC)) + _Y;
-    case IMPLIED:
-    case ACCUMULATOR:
-    case IMMEDIATE:
+    case Implied:
+    case Accumulator:
+    case Immediate:
         return 0;
     }
 }
 void Cpu::handleInterrupt() {
     uint16_t vector_address;
-    INTERRUPT_TYPES interrupt = _interrupt_line.getInterrupt();
+    InterruptType interrupt = _interrupt_line.getInterrupt();
     // Should i put reset as interrupt type?
-    if (interrupt == INTERRUPT_TYPES::NONE)
+    if (interrupt == InterruptType::None)
         return;
 
-    if (interrupt == INTERRUPT_TYPES::IRQ) {
+    if (interrupt == InterruptType::Irq) {
         if (_P.interrupt_disable)
             return;
         vector_address = IRQ_ADDRESS;
-    } else if (interrupt == INTERRUPT_TYPES::NMI) {
+    } else if (interrupt == InterruptType::Nmi) {
         vector_address = NMI_ADDRESS;
     } else {
         // Nesdev wiki says that reset is like an interrupt, SP decrements by 3
@@ -82,7 +82,7 @@ void Cpu::handleInterrupt() {
     _interrupt_line.clear();
 }
 
-void Cpu::push(ubyte b) {
+void Cpu::push(uByte b) {
     _mmc.write(_SP | 0x100, b);
     --_SP; // Stack grows downward
 }
@@ -91,10 +91,22 @@ void Cpu::push16(uint16_t b) {
     push(b);
 }
 
-ubyte Cpu::pull() { return _mmc.read(++_SP | 0x100); }
+uByte Cpu::pull() { return _mmc.read(++_SP | 0x100); }
 uint16_t Cpu::pull16() {
     uint16_t low = pull();
     uint16_t high = pull();
 
     return high << 8 | low;
+}
+
+void Cpu::ADC(uint16_t address){
+    //TODO: complete this
+    _A = _mmc.read(address) + _P.carry;
+    _P.zero = ~_A;
+    _P.negative = _A & 0x8;
+}
+void Cpu::AND(uint16_t address){
+    _A &= _mmc.read(address);
+    _P.zero = ~_A;
+    _P.negative = _A & 0x8;
 }

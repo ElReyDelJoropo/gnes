@@ -9,7 +9,7 @@ using namespace gnes;
 void Mmc::powerUp(){
     std::memset(_ram,0x0,0x800);
 }
-ubyte Mmc::read(uint16_t address) {
+uByte Mmc::read(uint16_t address) {
     switch (address) {
     // Internal ram
     case 0x0 ... 0x1FFF:

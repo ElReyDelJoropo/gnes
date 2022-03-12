@@ -1,18 +1,18 @@
 #pragma once
 namespace gnes {
-enum INTERRUPT_TYPES { NONE, IRQ, NMI, RESET, ERROR };
+enum class InterruptType { None, Irq, Nmi, Reset, Error };
     class InterruptLine{
         public:
-            void setInterrupt(INTERRUPT_TYPES i){
+            void setInterrupt(InterruptType i){
                 _interrupt = i;
             }
-            INTERRUPT_TYPES getInterrupt(){
+            InterruptType getInterrupt(){
                 return _interrupt;
             }
             void clear(){
-                setInterrupt(NONE);
+                setInterrupt(InterruptType::None);
             }
         private:
-        INTERRUPT_TYPES _interrupt;
+        InterruptType _interrupt;
     };
 }
