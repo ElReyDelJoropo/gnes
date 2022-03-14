@@ -1,15 +1,14 @@
 #include "mmc.hpp"
 
-#include <cstring>
 #include <cstdint>
+#include <cstring>
 using std::uint16_t;
 
 using namespace gnes;
 
-void Mmc::powerUp(){
-    std::memset(_ram,0x0,0x800);
-}
-uByte Mmc::read(uint16_t address) {
+void Mmc::powerUp() { std::memset(_ram, 0x0, 0x800); }
+uByte Mmc::read(uint16_t address)
+{
     switch (address) {
     // Internal ram
     case 0x0 ... 0x1FFF:
@@ -29,9 +28,18 @@ uByte Mmc::read(uint16_t address) {
 
     return 0;
 }
-uint16_t Mmc::read16(uint16_t address) {
+uint16_t Mmc::read16(uint16_t address)
+{
     uint16_t low = read(address);
     uint16_t high = read(address + 1);
+
+    return high << 8 | low;
+}
+uint16_t Mmc::read16Bug(uint16_t address)
+{
+    uint16_t page = address & 0xFF00;
+    uint16_t low = read(address);
+    uint16_t high = read(page | (address + 1 & 0xFF));
 
     return high << 8 | low;
 }
