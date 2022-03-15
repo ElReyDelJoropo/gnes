@@ -5,6 +5,37 @@
 
 using namespace gnes;
 
+const uint16_t Cpu::instruction_sizes[13] = {
+    2, // Zero page
+    2, // Zero page X
+    2, // Zero page Y
+    3, // Absolute X
+    3, // Absolute Y
+    2, // Indexed Indirect
+    2, // Indirect Indexed
+    1, // Implied
+    1, // Accumulator
+    2, // Immediate
+    3, // Absolute
+    2, // Relative
+    3  // Indirect
+};
+const struct Cpu::instruction Cpu::instruction_lookup_table[0xFF] = {
+    // 00-0F
+    {"BRK", &Cpu::BRK, Implied, 7},     {"ORA", &Cpu::ORA, IndexedIndirect, 6},
+    {"XXX", &Cpu::XXX, Implied, 0},     {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},     {"ORA", &Cpu::ORA, ZeroPage, 3},
+    {"ASL", &Cpu::ASL, ZeroPage, 5},    {"XXX", &Cpu::XXX, Implied, 0},
+    {"PHP", &Cpu::PHP, Implied, 3},     {"ORA", &Cpu::ORA, Immediate, 2},
+    {"ASL", &Cpu::ASL, Accumulator, 2}, {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},     {"ORA", &Cpu::ORA, Absolute, 4},
+    {"ASL", &Cpu::ASL, Absolute, 2},    {"XXX", &Cpu::XXX, Implied, 0},
+    // 10 - 1F
+    {"BPL",&Cpu::BPL,Relative,2},{"ORA", &Cpu::ORA, IndirectIndexed, 5},
+    
+    
+};
+
 void Cpu::powerUp()
 {
     _P.data = 0x34;
@@ -22,50 +53,49 @@ void Cpu::step()
 
     handleInterrupt();
 
-    _opcode = _mmc.read(_PC++);
+    _opcode = _mmc.read(_PC);
     address =
         translateAddress(instruction_lookup_table[_opcode].addressing_mode);
-    (this->*instruction_lookup_table[_opcode].func)(address);
     _PC += instruction_lookup_table[_opcode].size;
     _cycles += instruction_lookup_table[_opcode].cycle_lenght;
+    (this->*instruction_lookup_table[_opcode].func)(address);
 }
 
 uint16_t Cpu::translateAddress(AddressingMode mode)
 {
     uint16_t temp;
-    //_PC will pointing byte after opcode
     switch (mode) {
     // Zero page and relative addressing fetch the address in the same way
     case ZeroPage:
     case Relative:
-        return _mmc.read(_PC);
+        return _mmc.read(_PC + 1);
     case ZeroPageX:
-        return _mmc.read(_PC) + _X & 0xFF; // Wrapped around
+        return _mmc.read(_PC + 1) + _X & 0xFF; // Wrapped around
     case ZeroPageY:
-        return _mmc.read(_PC) + _Y & 0xFF;
+        return _mmc.read(_PC + 1) + _Y & 0xFF;
     case Absolute:
-        return _mmc.read16(_PC);
+        return _mmc.read16(_PC + 1);
     case AbsoluteX:
-        temp = _mmc.read16(_PC);
+        temp = _mmc.read16(_PC + 1);
         if (is_page_crossed(temp, temp + _X))
             ++_cycles;
         return temp + _X;
     case AbsoluteY:
-        temp = _mmc.read16(_PC);
+        temp = _mmc.read16(_PC + 1);
         if (is_page_crossed(temp, temp + _Y))
             ++_cycles;
         return temp + _Y;
     case Indirect:
-        return _mmc.read16Bug(_mmc.read16(_PC));
+        return _mmc.read16Bug(_mmc.read16(_PC + 1));
     case IndexedIndirect:
-        return _mmc.read16(_mmc.read(_PC) + _X);
+        return _mmc.read16(_mmc.read(_PC + 1) + _X);
     case IndirectIndexed:
-        temp = _mmc.read16(_mmc.read(_PC));
+        temp = _mmc.read16(_mmc.read(_PC + 1));
         if (is_page_crossed(temp, temp + _Y))
             ++_cycles;
         return temp + _Y;
     case Immediate:
-        return _PC;
+        return _PC + 1;
     case Implied:
     case Accumulator:
         return 0;
@@ -121,6 +151,7 @@ uint16_t Cpu::pull16()
 }
 void Cpu::branch(uint16_t address)
 {
+    // XXX: Check that cpu branchs correctly
     Byte displacement = _mmc.read(address); // Signed byte
 
     if (is_page_crossed(_PC, _PC + displacement))
@@ -414,9 +445,57 @@ void Cpu::RTS(uint16_t)
 {
     // TODO: check this instruction size
     _PC = pull16();
-    assert(strcmp(instruction_lookup_table[_PC].name, "JSR") == 0);
 }
-void Cpu::SBC(uint16_t address){
-    uByte temp = _mmc.read(address);
+void Cpu::SBC(uint16_t address)
+{
+    // XXX: take care about this function
+    uByte b = _mmc.read(address);
+    uint16_t result = _A - b - ~_P.carry;
 
+    _P.zero = ~result;
+    _P.negative = result & 0x80;
+    _P.carry = result & 0x100;
+    _P.overflow = (_A ^ result) & (b ^ result) & 0x80;
+    _A = result;
+}
+void Cpu::SEC(uint16_t) { _P.carry = 1; }
+void Cpu::SED(uint16_t) { _P.decimal = 1; }
+void Cpu::SEI(uint16_t) { _P.interrupt_disable = 1; }
+void Cpu::STA(uint16_t address) { _mmc.write(address, _A); }
+void Cpu::STX(uint16_t address) { _mmc.write(address, _X); }
+void Cpu::STY(uint16_t address) { _mmc.write(address, _Y); }
+void Cpu::TAX(uint16_t)
+{
+    _X = _A;
+    _P.zero = ~_X;
+    _P.negative = _X & 0x80;
+}
+void Cpu::TAY(uint16_t)
+{
+    _Y = _A;
+    _P.zero = ~_Y;
+    _P.negative = _Y & 0x80;
+}
+void Cpu::TSX(uint16_t)
+{
+    _X = _SP;
+    _P.zero = ~_X;
+    _P.negative = _X & 0x80;
+}
+void Cpu::TXA(uint16_t)
+{
+    _A = _X;
+    _P.zero = ~_A;
+    _P.negative = _A & 0x80;
+}
+void Cpu::TXS(uint16_t) { _SP = _X; }
+void Cpu::TYA(uint16_t)
+{
+    _A = _Y;
+    _P.zero = ~_A;
+    _P.negative = _A & 0x80;
+}
+void Cpu::XXX(uint16_t)
+{
+    // TODO: trow
 }

@@ -38,9 +38,9 @@ class Cpu {
         const char *name;
         void (Cpu::*func)(std::uint16_t);
         AddressingMode addressing_mode;
-        int size;
         int cycle_lenght;
     } instruction_lookup_table[0xFF];
+    static const std::uint16_t instruction_sizes[13];
 
     uByte _X, _Y; // X and Y registers
     uByte _SP;    // Stack pointer
@@ -138,5 +138,18 @@ class Cpu {
     void RTI(std::uint16_t);
     void RTS(std::uint16_t);
     void SBC(std::uint16_t);
+    void SEC(std::uint16_t);
+    void SED(std::uint16_t);
+    void SEI(std::uint16_t);
+    void STA(std::uint16_t);
+    void STX(std::uint16_t);
+    void STY(std::uint16_t);
+    void TAX(std::uint16_t);
+    void TAY(std::uint16_t);
+    void TSX(std::uint16_t);
+    void TXA(std::uint16_t);
+    void TXS(std::uint16_t);
+    void TYA(std::uint16_t);
+    void XXX(std::uint16_t);
 };
 } // namespace gnes

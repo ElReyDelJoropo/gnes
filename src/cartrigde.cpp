@@ -7,35 +7,35 @@
 using std::uint16_t;
 #include <cstring>
 using std::strerror;
+#include <filesystem>
+using std::filesystem::path;
 #include <fstream>
 using std::ifstream;
 #include <iostream>
 using std::cerr;
 #include <memory>
 using std::make_unique;
-#include <string>
-using std::string;
 
 using namespace gnes;
 
 uByte Cartrigde::read(uint16_t a) { return _mapper->read(a); }
 void Cartrigde::write(uint16_t a, uByte b) { _mapper->write(a, b); }
 
-void Cartrigde::load(string &game_path) {
+void Cartrigde::load(path &game_path)
+{
     ifstream file;
     char header[16];
-    std::ios::pos_type sz;
 
     file.open(game_path, std::ios::in | std::ios::binary);
 
     if (!file) {
-        // fprintf(stderr, "Unable to open the file: %s", std::strerror(errno));
         cerr << "Unable to open the file: " << std::strerror(errno);
         _interrupt_line.setInterrupt(InterruptType::Error);
         return;
     }
-    sz = getRomSize(file);
-    file.read(header, 16);
+    auto sz = std::filesystem::file_size(game_path);
+    file.read(header,16);
+
     if (file.gcount() < 16) {
         cerr << "Error: Corrupted rom";
         _interrupt_line.setInterrupt(InterruptType::Error);
@@ -56,16 +56,9 @@ void Cartrigde::load(string &game_path) {
         _interrupt_line.setInterrupt(InterruptType::Error);
     }
 }
-std::ios::pos_type Cartrigde::getRomSize(ifstream &file) {
-    auto sz = file.tellg();
 
-    file.seekg(0, std::ios::end);
-    sz = file.tellg() - sz;
-    file.seekg(0, std::ios::beg);
-
-    return sz;
-}
-int Cartrigde::parseHeader(char header[16]) {
+int Cartrigde::parseHeader(char header[16])
+{
     if (strncmp(header, "NES\x1A", 4) != 0) {
         return -1;
     }
@@ -83,7 +76,8 @@ int Cartrigde::parseHeader(char header[16]) {
 
     return 0;
 }
-int Cartrigde::createMapper() {
+int Cartrigde::createMapper()
+{
     switch (_rom_info.mapper_number) {
     case 0:
         _mapper =

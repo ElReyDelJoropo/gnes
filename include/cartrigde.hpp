@@ -3,9 +3,9 @@
 #include "mapper.hpp"
 #include "types.hpp"
 
+#include <filesystem>
 #include <fstream>
 #include <memory>
-#include <string>
 #include <vector>
 
 namespace gnes {
@@ -27,7 +27,7 @@ struct RomInfo {
 class Cartrigde {
   public:
     Cartrigde(InterruptLine &);
-    void load(std::string &);
+    void load(std::filesystem::path &);
 
     uByte read(std::uint16_t);
     void write(std::uint16_t, uByte);
@@ -40,6 +40,5 @@ class Cartrigde {
 
     int createMapper();
     int parseHeader(char[16]);
-    std::ios::pos_type getRomSize(std::ifstream &);
 };
 } // namespace gnes
