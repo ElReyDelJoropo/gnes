@@ -11,10 +11,10 @@ using std::strerror;
 using std::filesystem::path;
 #include <fstream>
 using std::ifstream;
-#include <iostream>
-using std::cerr;
 #include <memory>
 using std::make_unique;
+#include <stdexcept>
+using std::runtime_error;
 
 using namespace gnes;
 
@@ -28,33 +28,28 @@ void Cartrigde::load(path &game_path)
 
     file.open(game_path, std::ios::in | std::ios::binary);
 
-    if (!file) {
-        cerr << "Unable to open the file: " << std::strerror(errno);
-        _interrupt_line.setInterrupt(InterruptType::Error);
-        return;
-    }
-    auto sz = std::filesystem::file_size(game_path);
-    file.read(header,16);
+    if (!file)
+        throw runtime_error(strerror(errno));
 
-    if (file.gcount() < 16) {
-        cerr << "Error: Corrupted rom";
-        _interrupt_line.setInterrupt(InterruptType::Error);
-        return;
-    }
-    // XXX: I could add some error codes to give a better error message
-    if (parseHeader(header) == -1) {
-        cerr << "Invalid header";
-        _interrupt_line.setInterrupt(InterruptType::Error);
-        return;
-    }
+    auto sz = std::filesystem::file_size(game_path);
+
+    if (sz < 16)
+        throw runtime_error("corrupted rom");
+
+    file.read(header, 16);
+
+    if (parseHeader(header) == -1)
+        throw runtime_error("invalid header");
+
     _raw_data.resize(sz);
     // XXX: Could I avoid this cast?
     file.read(reinterpret_cast<ifstream::char_type *>(_raw_data.data()), sz);
-    if (createMapper() == -1) {
-        cerr << "Error: mapper #" << _rom_info.mapper_number
-             << " not supported";
-        _interrupt_line.setInterrupt(InterruptType::Error);
-    }
+    createMapper();
+
+    if (!_mapper)
+        throw runtime_error("Mapper #" +
+                            std::to_string(_rom_info.mapper_number) +
+                            " not supported");
 }
 
 int Cartrigde::parseHeader(char header[16])
@@ -76,14 +71,15 @@ int Cartrigde::parseHeader(char header[16])
 
     return 0;
 }
-int Cartrigde::createMapper()
+void Cartrigde::createMapper()
 {
     switch (_rom_info.mapper_number) {
     case 0:
         _mapper =
             make_unique<Mapper_000>(&_rom_info, _interrupt_line, _raw_data);
-        return 0;
+        break;
     default:
-        return -1;
+        _mapper = nullptr;
+        break;
     }
 }

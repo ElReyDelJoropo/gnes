@@ -38,7 +38,7 @@ class Cartrigde {
     RomInfo _rom_info;
     std::vector<uByte> _raw_data;
 
-    int createMapper();
+    void createMapper();
     int parseHeader(char[16]);
 };
 } // namespace gnes

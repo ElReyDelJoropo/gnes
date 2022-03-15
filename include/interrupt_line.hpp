@@ -1,6 +1,6 @@
 #pragma once
 namespace gnes {
-enum class InterruptType { None, Irq, Nmi, Reset, Error };
+enum class InterruptType { None, Irq, Nmi, Reset};
     class InterruptLine{
         public:
             void setInterrupt(InterruptType i){
