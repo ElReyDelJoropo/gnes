@@ -66,16 +66,21 @@ int Cartrigde::parseHeader(char header[16])
     //FIXME: improve parsing the header
     _rom_info.PRG_ROM_units = header[4];
     _rom_info.CHR_ROM_units = header[5];
+    _rom_info.uses_CHR_RAM = !_rom_info.CHR_ROM_units;    
     _rom_info.has_PRG_RAM = header[6] & 0x2;
     _rom_info.has_trainer = header[6] & 0x4;
-    _rom_info.mirroring = header[6] & 0x9;
+    _rom_info.four_screen_mode = header[6] & 0x8;
+    _rom_info.mirroring = header[6] & 0x9 ? 1 : 0;
     _rom_info.mapper_number = (header[7] & 0xF0) | ((header[6] & 0xF0) >> 4);
     _rom_info.VS_Unisystem = header[7] & 0x1;
     _rom_info.play_choice_10 = header[7] & 0x2;
-    _rom_info.nes_20_format = header[7] & 0xC;
-    _rom_info.PRG_RAM_units = header[8] ? header[8] : 1;
+    _rom_info.is_nes_20_format = (header[7] & 0xC) == 0x8;
+    //_rom_info.PRG_RAM_units = header[8] ? header[8] : 1;
+    
+    if (!_rom_info.is_nes_20_format)
+        return 0;
 
-    return 0;
+    
 }
 std::unique_ptr<Mapper> Cartrigde::makeMapper()
 {

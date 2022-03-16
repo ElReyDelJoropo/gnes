@@ -1,9 +1,10 @@
 #include "cpu.hpp"
-#include "utility.hpp"
 
 #include <cassert>
 #include <cstring>
 #include <iomanip>
+using std::hex;
+using std::setw;
 #include <string>
 using std::string;
 #include <stdexcept>
@@ -188,13 +189,24 @@ void Cpu::dumpCpuState(uint16_t address)
                 << assembleInstruction(instruction_lookup_table[_opcode].name,
                                        address)
                 << '\n'
-                << "PC: " << (int)_PC << '\n'
-                << "X: " << (int)_X << '\t' << "Y: " << (int)_Y << '\n'
-                << "SP: " << (int)_SP << '\n'
+                << "PC: $" << setw(4) << hex << (int)_PC << '\n'
+                << "X: $" << setw(2) << (int)_X << '\t' << "Y: $" << setw(2)
+                << (int)_Y << '\n'
+                << "SP: $" << setw(2) << (int)_SP << '\n'
                 << "P: " << statusRegisterToString() << '\n';
 }
 string Cpu::assembleInstruction(string name, uint16_t address)
 {
+    auto toHexString = [](int value, int wide) {
+        assert(value >= 0 && value <= 0xFFFF);
+        assert(wide == 4 || (wide == 2 && (value & 0xFF00) == 0));
+
+        char buf[5]; // 16 bits address are 4digits wide
+        snprintf(buf, 5, "%0*X", wide, value);
+
+        return "$" + string{buf};
+    };
+
     switch (instruction_lookup_table[_opcode].addressing_mode) {
     case ZeroPage:
         return name + " " + toHexString(address, 2);
@@ -209,15 +221,15 @@ string Cpu::assembleInstruction(string name, uint16_t address)
     case AbsoluteY:
         return name + " " + toHexString(address, 4) + ", Y";
     case Indirect:
-        return name + " (" + toHexString(address,4) + ")";
+        return name + " (" + toHexString(address, 4) + ")";
     case IndexedIndirect:
-        return name + " (" + toHexString(address,2) + ", X)";
+        return name + " (" + toHexString(address, 2) + ", X)";
     case IndirectIndexed:
-        return name + " (" + toHexString(address,4) + "), Y";
+        return name + " (" + toHexString(address, 4) + "), Y";
     case Immediate:
-        return name + " #" + toHexString(address,2);
+        return name + " #" + toHexString(address, 2);
     case Relative:
-        return name + toHexString(static_cast<Byte>(address),2);
+        return name + toHexString(static_cast<Byte>(address), 2);
     case Implied:
     case Accumulator:
         return "";
@@ -506,7 +518,7 @@ void Cpu::RTS(uint16_t)
 {
     // TODO: check this instruction size
     _PC = pull16() + 1;
-    assert(instruction_lookup_table[_PC - 3].name== "JSR");
+    assert(instruction_lookup_table[_PC - 3].name == "JSR");
 }
 void Cpu::SBC(uint16_t address)
 {
@@ -559,6 +571,5 @@ void Cpu::TYA(uint16_t)
 }
 void Cpu::XXX(uint16_t)
 {
-    // Verbose way to convert int to hex string
-    throw runtime_error{"Cpu: Invalid opcode $" + toHexString(_opcode, 2)};
+    throw runtime_error{"Cpu: Invalid opcode"};
 }

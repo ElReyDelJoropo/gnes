@@ -15,13 +15,15 @@ struct RomInfo {
     int CHR_ROM_units;
     int PRG_RAM_units;
     int mapper_number;
+    int submapper_number;
     int mirroring;
+    bool four_screen_mode;
     bool has_trainer;
     bool has_PRG_RAM;
     bool uses_CHR_RAM;
     bool VS_Unisystem;
     bool play_choice_10;
-    uByte nes_20_format;
+    bool is_nes_20_format;
     bool tv_system;
 };
 
