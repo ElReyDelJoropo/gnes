@@ -56,7 +56,7 @@ void Cpu::step()
     _opcode = _mmc.read(_PC);
     address =
         translateAddress(instruction_lookup_table[_opcode].addressing_mode);
-    _PC += instruction_lookup_table[_opcode].size;
+    _PC += instruction_sizes[instruction_lookup_table[_opcode].addressing_mode];
     _cycles += instruction_lookup_table[_opcode].cycle_lenght;
     (this->*instruction_lookup_table[_opcode].func)(address);
 }
@@ -347,6 +347,7 @@ void Cpu::JSR(uint16_t address)
 {
     // TODO: this is a size 0 instruction
     push16(_PC - 1);
+    _PC = address;
 }
 void Cpu::LDA(uint16_t address)
 {

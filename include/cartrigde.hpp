@@ -1,6 +1,7 @@
 #pragma once
 #include "interrupt_line.hpp"
 #include "mapper.hpp"
+#include "log_buffer.hpp"
 #include "types.hpp"
 
 #include <filesystem>
@@ -26,7 +27,7 @@ struct RomInfo {
 
 class Cartrigde {
   public:
-    Cartrigde(InterruptLine &);
+    Cartrigde(InterruptLine &, LogModule &);
     void load(std::filesystem::path &);
 
     uByte read(std::uint16_t);
@@ -34,11 +35,13 @@ class Cartrigde {
 
   private:
     InterruptLine &_interrupt_line;
+    LogModule &_log_module;
     std::unique_ptr<Mapper> _mapper;
     RomInfo _rom_info;
     std::vector<uByte> _raw_data;
 
-    void createMapper();
     int parseHeader(char[16]);
+    std::unique_ptr<Mapper> makeMapper();
+    void dumpRomInfo();
 };
 } // namespace gnes
