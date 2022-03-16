@@ -1,7 +1,13 @@
 #include "cpu.hpp"
+#include "utility.hpp"
 
 #include <cassert>
 #include <cstring>
+#include <iomanip>
+#include <string>
+using std::string;
+#include <stdexcept>
+using std::runtime_error;
 
 using namespace gnes;
 
@@ -22,18 +28,26 @@ const uint16_t Cpu::instruction_sizes[13] = {
 };
 const struct Cpu::instruction Cpu::instruction_lookup_table[0xFF] = {
     // 00-0F
-    {"BRK", &Cpu::BRK, Implied, 7},     {"ORA", &Cpu::ORA, IndexedIndirect, 6},
-    {"XXX", &Cpu::XXX, Implied, 0},     {"XXX", &Cpu::XXX, Implied, 0},
-    {"XXX", &Cpu::XXX, Implied, 0},     {"ORA", &Cpu::ORA, ZeroPage, 3},
-    {"ASL", &Cpu::ASL, ZeroPage, 5},    {"XXX", &Cpu::XXX, Implied, 0},
-    {"PHP", &Cpu::PHP, Implied, 3},     {"ORA", &Cpu::ORA, Immediate, 2},
-    {"ASL", &Cpu::ASL, Accumulator, 2}, {"XXX", &Cpu::XXX, Implied, 0},
-    {"XXX", &Cpu::XXX, Implied, 0},     {"ORA", &Cpu::ORA, Absolute, 4},
-    {"ASL", &Cpu::ASL, Absolute, 2},    {"XXX", &Cpu::XXX, Implied, 0},
+    {"BRK", &Cpu::BRK, Implied, 7},
+    {"ORA", &Cpu::ORA, IndexedIndirect, 6},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"ORA", &Cpu::ORA, ZeroPage, 3},
+    {"ASL", &Cpu::ASL, ZeroPage, 5},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"PHP", &Cpu::PHP, Implied, 3},
+    {"ORA", &Cpu::ORA, Immediate, 2},
+    {"ASL", &Cpu::ASL, Accumulator, 2},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"ORA", &Cpu::ORA, Absolute, 4},
+    {"ASL", &Cpu::ASL, Absolute, 2},
+    {"XXX", &Cpu::XXX, Implied, 0},
     // 10 - 1F
-    {"BPL",&Cpu::BPL,Relative,2},{"ORA", &Cpu::ORA, IndirectIndexed, 5},
-    
-    
+    {"BPL", &Cpu::BPL, Relative, 2},
+    {"ORA", &Cpu::ORA, IndirectIndexed, 5},
+
 };
 
 void Cpu::powerUp()
@@ -58,6 +72,7 @@ void Cpu::step()
         translateAddress(instruction_lookup_table[_opcode].addressing_mode);
     _PC += instruction_sizes[instruction_lookup_table[_opcode].addressing_mode];
     _cycles += instruction_lookup_table[_opcode].cycle_lenght;
+    dumpCpuState(address);
     (this->*instruction_lookup_table[_opcode].func)(address);
 }
 
@@ -77,12 +92,12 @@ uint16_t Cpu::translateAddress(AddressingMode mode)
         return _mmc.read16(_PC + 1);
     case AbsoluteX:
         temp = _mmc.read16(_PC + 1);
-        if (is_page_crossed(temp, temp + _X))
+        if (isPageCrossed(temp, temp + _X))
             ++_cycles;
         return temp + _X;
     case AbsoluteY:
         temp = _mmc.read16(_PC + 1);
-        if (is_page_crossed(temp, temp + _Y))
+        if (isPageCrossed(temp, temp + _Y))
             ++_cycles;
         return temp + _Y;
     case Indirect:
@@ -91,7 +106,7 @@ uint16_t Cpu::translateAddress(AddressingMode mode)
         return _mmc.read16(_mmc.read(_PC + 1) + _X);
     case IndirectIndexed:
         temp = _mmc.read16(_mmc.read(_PC + 1));
-        if (is_page_crossed(temp, temp + _Y))
+        if (isPageCrossed(temp, temp + _Y))
             ++_cycles;
         return temp + _Y;
     case Immediate:
@@ -149,21 +164,66 @@ uint16_t Cpu::pull16()
 
     return high << 8 | low;
 }
+
 void Cpu::branch(uint16_t address)
 {
     // XXX: Check that cpu branchs correctly
     Byte displacement = _mmc.read(address); // Signed byte
 
-    if (is_page_crossed(_PC, _PC + displacement))
+    if (isPageCrossed(_PC, _PC + displacement))
         _cycles += 2;
 
     _PC += displacement;
     ++_cycles;
 }
-bool Cpu::is_page_crossed(uint16_t a, uint16_t b)
+bool Cpu::isPageCrossed(uint16_t a, uint16_t b)
 {
     return (a & 0xFF00) != (b & 0xFF00);
 }
+
+void Cpu::dumpCpuState(uint16_t address)
+{
+    _log_module.setBufferID(BufferID::CpuID);
+    _log_module << "-> "
+                << assembleInstruction(instruction_lookup_table[_opcode].name,
+                                       address)
+                << '\n'
+                << "PC: " << (int)_PC << '\n'
+                << "X: " << (int)_X << '\t' << "Y: " << (int)_Y << '\n'
+                << "SP: " << (int)_SP << '\n'
+                << "P: " << statusRegisterToString() << '\n';
+}
+string Cpu::assembleInstruction(string name, uint16_t address)
+{
+    switch (instruction_lookup_table[_opcode].addressing_mode) {
+    case ZeroPage:
+        return name + " " + toHexString(address, 2);
+    case ZeroPageX:
+        return name + " " + toHexString(address, 2) + ", X";
+    case ZeroPageY:
+        return name + " " + toHexString(address, 2) + ", Y";
+    case Absolute:
+        return name + " " + toHexString(address, 4);
+    case AbsoluteX:
+        return name + " " + toHexString(address, 4) + ", X";
+    case AbsoluteY:
+        return name + " " + toHexString(address, 4) + ", Y";
+    case Indirect:
+        return name + " (" + toHexString(address,4) + ")";
+    case IndexedIndirect:
+        return name + " (" + toHexString(address,2) + ", X)";
+    case IndirectIndexed:
+        return name + " (" + toHexString(address,4) + "), Y";
+    case Immediate:
+        return name + " #" + toHexString(address,2);
+    case Relative:
+        return name + toHexString(static_cast<Byte>(address),2);
+    case Implied:
+    case Accumulator:
+        return "";
+    }
+}
+
 void Cpu::ADC(uint16_t address)
 {
     uByte temp = _mmc.read(address);
@@ -445,7 +505,8 @@ void Cpu::RTI(uint16_t)
 void Cpu::RTS(uint16_t)
 {
     // TODO: check this instruction size
-    _PC = pull16();
+    _PC = pull16() + 1;
+    assert(instruction_lookup_table[_PC - 3].name== "JSR");
 }
 void Cpu::SBC(uint16_t address)
 {
@@ -498,5 +559,6 @@ void Cpu::TYA(uint16_t)
 }
 void Cpu::XXX(uint16_t)
 {
-    // TODO: trow
+    // Verbose way to convert int to hex string
+    throw runtime_error{"Cpu: Invalid opcode $" + toHexString(_opcode, 2)};
 }

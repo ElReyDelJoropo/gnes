@@ -1,8 +1,11 @@
 #pragma once
 
 #include "interrupt_line.hpp"
+#include "log_buffer.hpp"
 #include "mmc.hpp"
 #include "types.hpp"
+
+#include <string>
 
 namespace gnes {
 
@@ -24,7 +27,7 @@ enum AddressingMode {
 
 class Cpu {
   public:
-    Cpu(Mmc &, InterruptLine &);
+    Cpu(Mmc &, InterruptLine &, LogModule &);
 
     void step();
 
@@ -35,7 +38,7 @@ class Cpu {
     static constexpr std::uint16_t IRQ_ADDRESS = 0xFFFE;
 
     static const struct instruction {
-        const char *name;
+        std::string name;
         void (Cpu::*func)(std::uint16_t);
         AddressingMode addressing_mode;
         int cycle_lenght;
@@ -77,6 +80,7 @@ class Cpu {
     int _cycles;
     Mmc &_mmc;
     InterruptLine &_interrupt_line;
+    LogModule &_log_module;
 
     void powerUp();
     void reset();
@@ -91,8 +95,11 @@ class Cpu {
     std::uint16_t pull16();
 
     void branch(std::uint16_t);
-    bool is_page_crossed(std::uint16_t,std::uint16_t);
+    bool isPageCrossed(std::uint16_t,std::uint16_t);
 
+    void dumpCpuState(std::uint16_t);
+    std::string assembleInstruction(std::string, std::uint16_t);
+    std::string statusRegisterToString();
     //Instructions
     void ADC(std::uint16_t);
     void AND(std::uint16_t);

@@ -34,7 +34,7 @@ LogModule::LogModule() : _current_resource_ptr(nullptr) {
         !_resources[BufferID::PpuID].file ||
         !_resources[BufferID::ApuID].file ||
         !_resources[BufferID::CartrigdeID].file)
-        throw runtime_error("Error: unable to create logfiles");
+        throw runtime_error{"Error: unable to create logfiles"};
 }
 LogModule::~LogModule() {
     for (int i = BufferID::CpuID; i <= BufferID::CartrigdeID; ++i) {
@@ -59,32 +59,10 @@ void LogModule::setBufferID(BufferID id) {
 
 LogModule &LogModule::operator<<(int i) {
     assert(_current_resource_ptr);
-
-    _current_resource_ptr->count +=
-        floor(log10(i)) + 1; // Number of digits in a number
     _current_resource_ptr->buffer << i;
-
-    if (_current_resource_ptr->count > BUFFER_MAX_SIZE) {
-        dump_buffer();
-        _current_resource_ptr->count = 0;
-    }
     return *this;
 }
-LogModule &LogModule::operator<<(string_view s) {
-    assert(_current_resource_ptr);
-
-    _current_resource_ptr->count += s.size();
-    _current_resource_ptr->buffer << s;
-
-    if (_current_resource_ptr->count > BUFFER_MAX_SIZE) {
-        dump_buffer();
-        _current_resource_ptr->count = 0;
-    }
-    return *this;
-}
-
 void LogModule::dump_buffer() {
     _current_resource_ptr->file << _current_resource_ptr->buffer.str();
-    _current_resource_ptr->buffer.str("");
 }
 #endif
