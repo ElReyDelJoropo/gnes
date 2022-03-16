@@ -12,6 +12,9 @@ using std::strerror;
 using std::filesystem::path;
 #include <fstream>
 using std::ifstream;
+#include <iomanip>
+using std::setfill;
+using std::setw;
 #include <memory>
 using std::make_unique;
 #include <stdexcept>
@@ -59,14 +62,15 @@ void Cartrigde::load(path &game_path)
 
 int Cartrigde::parseHeader(char header[16])
 {
+    // TODO: add support for nes 2.0 format
     if (strncmp(header, "NES\x1A", 4) != 0) {
         return -1;
     }
 
-    //FIXME: improve parsing the header
+    // FIXME: improve parsing the header
     _rom_info.PRG_ROM_units = header[4];
     _rom_info.CHR_ROM_units = header[5];
-    _rom_info.uses_CHR_RAM = !_rom_info.CHR_ROM_units;    
+    _rom_info.uses_CHR_RAM = !_rom_info.CHR_ROM_units;
     _rom_info.has_PRG_RAM = header[6] & 0x2;
     _rom_info.has_trainer = header[6] & 0x4;
     _rom_info.four_screen_mode = header[6] & 0x8;
@@ -76,11 +80,20 @@ int Cartrigde::parseHeader(char header[16])
     _rom_info.play_choice_10 = header[7] & 0x2;
     _rom_info.is_nes_20_format = (header[7] & 0xC) == 0x8;
     //_rom_info.PRG_RAM_units = header[8] ? header[8] : 1;
-    
-    if (!_rom_info.is_nes_20_format)
-        return 0;
 
-    
+    if (!_rom_info.is_nes_20_format) {
+        for (int i = 8; i != 16; ++i) // bytes remaining should be 0
+            if (header[i] != 0x00)
+                return -1;
+        return 0;
+    }
+
+    _rom_info.mapper_number |= (header[8] & 0xF) << 8;
+    _rom_info.submapper_number = (header[8] & 0xF0) >> 4;
+    _rom_info.PRG_ROM_units += header[9] & 0xF;
+    _rom_info.CHR_ROM_units += (header[9] & 0xF0) >> 4;
+
+    return 0;
 }
 std::unique_ptr<Mapper> Cartrigde::makeMapper()
 {
@@ -95,10 +108,13 @@ void Cartrigde::dumpRomInfo()
 {
     _log_module.setBufferID(BufferID::CartrigdeID);
     _log_module << "+++ ROM INFO +++\n"
-                << "PRG ROM units: " << _rom_info.PRG_ROM_units << '\n'
-                << "chr rom units: " << _rom_info.CHR_ROM_units << '\n'
-                << "mapper number: " << _rom_info.mapper_number << '\n'
-                << "mirroring: "
+                << "PRG ROM units: " << setw(2) << _rom_info.PRG_ROM_units
+                << '\n'
+                << "chr rom units: " << setw(2) << _rom_info.CHR_ROM_units
+                << '\n'
+                << "mapper number: " << setw(3) << setfill('0')
+                << _rom_info.mapper_number << '\n'
+                << setfill(' ') << "mirroring: "
                 << (_rom_info.mirroring == 1 ? "vertical" : "horizontal")
                 << '\n';
 }
