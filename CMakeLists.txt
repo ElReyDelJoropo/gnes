@@ -17,7 +17,12 @@ add_compile_options(
     -Wextra
     )
 set(SOURCES
-    "src/main.cpp")
+    "src/main.cpp"
+    "src/Emulator.cpp"
+    "src/cartrigde.cpp"
+    "src/cpu.cpp"
+    "src/mmc.cpp"
+    "src/mappers/mapper_000.cpp")
 
 find_package(SFML COMPONENTS audio graphics system window REQUIRED)
 

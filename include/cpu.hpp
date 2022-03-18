@@ -42,7 +42,7 @@ class Cpu {
         void (Cpu::*func)(std::uint16_t);
         AddressingMode addressing_mode;
         int cycle_lenght;
-    } instruction_lookup_table[0xFF];
+    } instruction_lookup_table[0x100];
     static const std::uint16_t instruction_sizes[13];
 
     uByte _x, _y;      // X and Y registers
