@@ -1,4 +1,5 @@
 #include "mmc.hpp"
+#include "cartrigde.hpp"
 
 #include <cstdint>
 #include <cstring>
@@ -6,6 +7,7 @@ using std::uint16_t;
 
 using namespace gnes;
 
+Mmc::Mmc(Cartrigde &c) : _cartrigde(c) { powerUp(); }
 void Mmc::powerUp() { std::memset(_ram, 0x0, 0x800); }
 uByte Mmc::read(uint16_t address)
 {
@@ -21,7 +23,7 @@ uByte Mmc::read(uint16_t address)
         break;
     // Cartrigde space
     case 0x4020 ... 0xFFFF:
-        break;
+        return _cartrigde.read(address);
     default:
         break;
     }

@@ -79,6 +79,7 @@ const struct Cpu::instruction Cpu::instruction_lookup_table[0xFF] = {
     {"AND",&Cpu::AND,Absolute,4},
     {"ROL",&Cpu::ROL,Absolute,6},
     {"XXX", &Cpu::XXX, Implied, 0},
+    //30 - 3F
     {"BMI", &Cpu::BMI, Relative, 2},
     {"AND",&Cpu::AND,IndirectIndexed,5},
     {"XXX", &Cpu::XXX, Implied, 0},
@@ -89,9 +90,12 @@ const struct Cpu::instruction Cpu::instruction_lookup_table[0xFF] = {
     {"XXX", &Cpu::XXX, Implied, 0},
     {"SEC", &Cpu::SEC, Implied, 2},
 
-
-
 };
+
+Cpu::Cpu(Mmc &m, InterruptLine &i, LogModule &l): _mmc{m}, _interrupt_line{i}, _log_module{l} {
+    powerUp();
+    reset();
+}
 
 void Cpu::powerUp()
 {
