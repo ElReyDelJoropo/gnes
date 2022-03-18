@@ -30,3 +30,8 @@ void Mapper_000::write(uint16_t address, uByte b)
     _prg_ram.at(address-0x6000) = b;
 }
 
+uint16_t Mapper_000::get_PagePtr(uint16_t address) const{
+    //TODO: complete this function
+    return address;
+}
+

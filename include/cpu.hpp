@@ -27,7 +27,7 @@ enum AddressingMode {
 
 class Cpu {
   public:
-    Cpu(Mmc &, InterruptLine &, LogModule &);
+    Cpu(Mmc *, InterruptLine *, LogModule *);
 
     void step();
 
@@ -45,10 +45,10 @@ class Cpu {
     } instruction_lookup_table[0xFF];
     static const std::uint16_t instruction_sizes[13];
 
-    uByte _X, _Y; // X and Y registers
-    uByte _SP;    // Stack pointer
-    uByte _A;     // Accumulator
-    std::uint16_t _PC;    // Program counter
+    uByte _x, _y;      // X and Y registers
+    uByte _sp;         // Stack pointer
+    uByte _a;          // Accumulator
+    std::uint16_t _pc; // Program counter
     // XXX: An obscure but efficient approach
     union {
         struct {
@@ -73,14 +73,14 @@ class Cpu {
 #endif
         };
         uByte data;
-    } _P;
+    } _p;
 
     uByte _opcode;
 
     int _cycles;
-    Mmc &_mmc;
-    InterruptLine &_interrupt_line;
-    LogModule &_log_module;
+    Mmc *_mmc;
+    InterruptLine *_interrupt_line;
+    LogModule *_log_module;
 
     void powerUp();
     void reset();
@@ -95,12 +95,12 @@ class Cpu {
     std::uint16_t pull16();
 
     void branch(std::uint16_t);
-    bool isPageCrossed(std::uint16_t,std::uint16_t);
+    static bool isPageCrossed(std::uint16_t, std::uint16_t);
 
     void dumpCpuState(std::uint16_t);
     std::string assembleInstruction(std::string, std::uint16_t);
     std::string statusRegisterToString();
-    //Instructions
+    // Instructions
     void ADC(std::uint16_t);
     void AND(std::uint16_t);
     void ASL(std::uint16_t);
