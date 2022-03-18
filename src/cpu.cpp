@@ -115,7 +115,7 @@ const struct Cpu::instruction Cpu::instruction_lookup_table[0xFF] = {
     {"EOR", &Cpu::EOR, Absolute, 4},
     {"LSR", &Cpu::LSR, Absolute, 6},
     {"XXX", &Cpu::XXX, Implied, 0},
-    //50 - 5F
+    // 50 - 5F
     {"BVC", &Cpu::BVC, Relative, 2},
     {"EOR", &Cpu::EOR, IndirectIndexed, 5},
     {"XXX", &Cpu::XXX, Implied, 0},
@@ -132,7 +132,7 @@ const struct Cpu::instruction Cpu::instruction_lookup_table[0xFF] = {
     {"EOR", &Cpu::EOR, AbsoluteX, 4},
     {"LSR", &Cpu::LSR, AbsoluteX, 7},
     {"XXX", &Cpu::XXX, Implied, 0},
-    //60 - 6F
+    // 60 - 6F
     {"RTS", &Cpu::RTS, Implied, 6},
     {"ADC", &Cpu::ADC, IndexedIndirect, 6},
     {"XXX", &Cpu::XXX, Implied, 0},
@@ -149,7 +149,7 @@ const struct Cpu::instruction Cpu::instruction_lookup_table[0xFF] = {
     {"ADC", &Cpu::ADC, Absolute, 4},
     {"ROR", &Cpu::ROR, Absolute, 6},
     {"XXX", &Cpu::XXX, Implied, 0},
-    //70 - 7F
+    // 70 - 7F
     {"BVS", &Cpu::BVS, Relative, 2},
     {"ADC", &Cpu::ADC, IndirectIndexed, 5},
     {"XXX", &Cpu::XXX, Implied, 0},
@@ -166,8 +166,20 @@ const struct Cpu::instruction Cpu::instruction_lookup_table[0xFF] = {
     {"ADC", &Cpu::ADC, AbsoluteX, 4},
     {"ROR", &Cpu::ROR, AbsoluteX, 7},
     {"XXX", &Cpu::XXX, Implied, 0},
-    //80 - 8F
-    
+    // 80 - 8F
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"STA", &Cpu::STA, IndexedIndirect, 6},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"STY", &Cpu::STY, ZeroPage, 3},
+    {"STA", &Cpu::STA, ZeroPage, 3},
+    {"STX", &Cpu::STX, ZeroPage, 3},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"DEY", &Cpu::DEY, Implied, 2},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"TXA", &Cpu::TXA, Implied, 2},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"STY", &Cpu::STY, Absolute, 4},
 
 };
 
