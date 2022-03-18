@@ -5,7 +5,7 @@ using std::filesystem::path;
 
 using namespace gnes;
 
-Emulator::Emulator(): _mmc(_cartrigde), _cpu(_mmc,_interrupt_line,_log_module), _cartrigde(_interrupt_line,_log_module){
+Emulator::Emulator(): _mmc(&_cartrigde), _cpu(&_mmc,&_interrupt_line,&_log_module), _cartrigde(&_interrupt_line,&_log_module){
 
 }
 

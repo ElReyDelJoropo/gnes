@@ -5,6 +5,8 @@
 #include <iomanip>
 using std::hex;
 using std::setw;
+#include <sstream>
+using std::ostringstream;
 #include <string>
 using std::string;
 #include <stdexcept>
@@ -54,7 +56,7 @@ const struct Cpu::instruction Cpu::instruction_lookup_table[0xFF] = {
     {"ORA", &Cpu::ORA, ZeroPageX, 4},
     {"ASL", &Cpu::ASL, ZeroPageX, 6},
     {"XXX", &Cpu::XXX, Implied, 0},
-    {"CLC", &Cpu::CLC, Implied,2},
+    {"CLC", &Cpu::CLC, Implied, 2},
     {"ORA", &Cpu::ORA, AbsoluteY, 4},
     {"XXX", &Cpu::XXX, Implied, 0},
     {"XXX", &Cpu::XXX, Implied, 0},
@@ -62,37 +64,116 @@ const struct Cpu::instruction Cpu::instruction_lookup_table[0xFF] = {
     {"ORA", &Cpu::ORA, AbsoluteX, 4},
     {"ASL", &Cpu::ASL, AbsoluteX, 7},
     {"XXX", &Cpu::XXX, Implied, 0},
-    //20 - 2F
-    {"JSR",&Cpu::JSR,Absolute,6},
-    {"AND",&Cpu::AND,IndexedIndirect,6},
+    // 20 - 2F
+    {"JSR", &Cpu::JSR, Absolute, 6},
+    {"AND", &Cpu::AND, IndexedIndirect, 6},
     {"XXX", &Cpu::XXX, Implied, 0},
     {"XXX", &Cpu::XXX, Implied, 0},
-    {"BIT",&Cpu::BIT,ZeroPage,3},
-    {"AND",&Cpu::AND,ZeroPage,3},
-    {"ROL",&Cpu::ROL,ZeroPage,5},
+    {"BIT", &Cpu::BIT, ZeroPage, 3},
+    {"AND", &Cpu::AND, ZeroPage, 3},
+    {"ROL", &Cpu::ROL, ZeroPage, 5},
     {"XXX", &Cpu::XXX, Implied, 0},
     {"PLP", &Cpu::PLP, Implied, 4},
-    {"AND",&Cpu::AND,Immediate,2},
-    {"ROL",&Cpu::ROL,Accumulator,2},
+    {"AND", &Cpu::AND, Immediate, 2},
+    {"ROL", &Cpu::ROL, Accumulator, 2},
     {"XXX", &Cpu::XXX, Implied, 0},
-    {"BIT",&Cpu::BIT,Absolute,4},
-    {"AND",&Cpu::AND,Absolute,4},
-    {"ROL",&Cpu::ROL,Absolute,6},
+    {"BIT", &Cpu::BIT, Absolute, 4},
+    {"AND", &Cpu::AND, Absolute, 4},
+    {"ROL", &Cpu::ROL, Absolute, 6},
     {"XXX", &Cpu::XXX, Implied, 0},
-    //30 - 3F
+    // 30 - 3F
     {"BMI", &Cpu::BMI, Relative, 2},
-    {"AND",&Cpu::AND,IndirectIndexed,5},
+    {"AND", &Cpu::AND, IndirectIndexed, 5},
     {"XXX", &Cpu::XXX, Implied, 0},
     {"XXX", &Cpu::XXX, Implied, 0},
     {"XXX", &Cpu::XXX, Implied, 0},
-    {"AND",&Cpu::AND,ZeroPageX,4},
-    {"ROL",&Cpu::ROL,ZeroPageX,6},
+    {"AND", &Cpu::AND, ZeroPageX, 4},
+    {"ROL", &Cpu::ROL, ZeroPageX, 6},
     {"XXX", &Cpu::XXX, Implied, 0},
     {"SEC", &Cpu::SEC, Implied, 2},
+    {"AND", &Cpu::AND, AbsoluteY, 4},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"AND", &Cpu::AND, AbsoluteX, 4},
+    {"ROL", &Cpu::ROL, AbsoluteX, 7},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    // 40 - 4F
+    {"RTI", &Cpu::RTI, Implied, 6},
+    {"EOR", &Cpu::EOR, IndexedIndirect, 6},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"EOR", &Cpu::EOR, ZeroPage, 3},
+    {"LSR", &Cpu::LSR, ZeroPage, 5},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"PHA", &Cpu::PHA, Implied, 3},
+    {"EOR", &Cpu::EOR, Immediate, 2},
+    {"LSR", &Cpu::LSR, Accumulator, 2},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"JMP", &Cpu::JMP, Absolute, 3},
+    {"EOR", &Cpu::EOR, Absolute, 4},
+    {"LSR", &Cpu::LSR, Absolute, 6},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    //50 - 5F
+    {"BVC", &Cpu::BVC, Relative, 2},
+    {"EOR", &Cpu::EOR, IndirectIndexed, 5},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"EOR", &Cpu::EOR, ZeroPageX, 4},
+    {"LSR", &Cpu::LSR, ZeroPageX, 6},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"CLI", &Cpu::CLI, Implied, 2},
+    {"EOR", &Cpu::EOR, AbsoluteY, 4},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"EOR", &Cpu::EOR, AbsoluteX, 4},
+    {"LSR", &Cpu::LSR, AbsoluteX, 7},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    //60 - 6F
+    {"RTS", &Cpu::RTS, Implied, 6},
+    {"ADC", &Cpu::ADC, IndexedIndirect, 6},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"ADC", &Cpu::ADC, ZeroPage, 3},
+    {"ROR", &Cpu::ROR, ZeroPage, 5},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"PLA", &Cpu::PLA, Implied, 4},
+    {"ADC", &Cpu::ADC, Immediate, 2},
+    {"ROR", &Cpu::ROR, Accumulator, 2},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"JMP", &Cpu::JMP, Indirect, 5},
+    {"ADC", &Cpu::ADC, Absolute, 4},
+    {"ROR", &Cpu::ROR, Absolute, 6},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    //70 - 7F
+    {"BVS", &Cpu::BVS, Relative, 2},
+    {"ADC", &Cpu::ADC, IndirectIndexed, 5},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"ADC", &Cpu::ADC, ZeroPageX, 4},
+    {"ROR", &Cpu::ROR, ZeroPageX, 6},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"SEI", &Cpu::SEI, Implied, 2},
+    {"ADC", &Cpu::ADC, AbsoluteY, 4},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    {"ADC", &Cpu::ADC, AbsoluteX, 4},
+    {"ROR", &Cpu::ROR, AbsoluteX, 7},
+    {"XXX", &Cpu::XXX, Implied, 0},
+    //80 - 8F
+    
 
 };
 
-Cpu::Cpu(Mmc *m, InterruptLine *i, LogModule *l): _mmc(m), _interrupt_line(i), _log_module(l) {
+Cpu::Cpu(Mmc *m, InterruptLine *i, LogModule *l)
+    : _mmc(m), _interrupt_line(i), _log_module(l)
+{
     powerUp();
     reset();
 }
@@ -228,56 +309,61 @@ bool Cpu::isPageCrossed(uint16_t a, uint16_t b)
 
 void Cpu::dumpCpuState(uint16_t address)
 {
-    _log_module->setBufferID(BufferID::CpuID);
-    *_log_module << "-> "
-                << assembleInstruction(instruction_lookup_table[_opcode].name,
-                                       address)
-                << '\n'
-                << "PC: $" << setw(4) << hex << (int)_pc << '\n'
-                << "X: $" << setw(2) << (int)_x << '\t' << "Y: $" << setw(2)
-                << (int)_y << '\n'
-                << "SP: $" << setw(2) << (int)_sp << '\n'
-                << "P: " << statusRegisterToString() << '\n';
+    _log_module.getBuffer(BufferID::CpuID)
+        << "-> "
+        << assembleInstruction(instruction_lookup_table[_opcode].name, address)
+        << '\n'
+        << "PC: $" << setw(4) << hex << (int)_pc << '\n'
+        << "X: $" << setw(2) << (int)_x << '\t' << "Y: $" << setw(2) << (int)_y
+        << '\n'
+        << "SP: $" << setw(2) << (int)_sp << '\n'
+        << "P: " << statusRegisterToString() << '\n';
 }
-string Cpu::assembleInstruction(string name, uint16_t address)
+string Cpu::assembleInstruction(const char *name, uint16_t address) const
 {
-    auto toHexString = [](int value, int wide) {
-        assert(value >= 0 && value <= 0xFFFF);
-        assert(wide == 4 || (wide == 2 && (value & 0xFF00) == 0));
-
-        char buf[5]; // 16 bits address are 4digits wide
-        snprintf(buf, 5, "%0*X", wide, value);
-
-        return "$" + string{buf};
-    };
+    ostringstream os;
+    os.setf(std::ios::hex);
 
     switch (instruction_lookup_table[_opcode].addressing_mode) {
     case ZeroPage:
-        return name + " " + toHexString(address, 2);
+        os << name << " " << setw(2) << address;
+        break;
     case ZeroPageX:
-        return name + " " + toHexString(address, 2) + ", X";
+        os << name << " " << setw(2) << ", X";
+        break;
     case ZeroPageY:
-        return name + " " + toHexString(address, 2) + ", Y";
+        os << name << " " << setw(2) << ", Y";
+        break;
     case Absolute:
-        return name + " " + toHexString(address, 4);
+        os << name << " " << setw(4) << address;
+        break;
     case AbsoluteX:
-        return name + " " + toHexString(address, 4) + ", X";
+        os << name << " " << setw(4) << ", X";
+        break;
     case AbsoluteY:
-        return name + " " + toHexString(address, 4) + ", Y";
+        os << name << " " << setw(4) << ", Y";
+        break;
     case Indirect:
-        return name + " (" + toHexString(address, 4) + ")";
+        os << name << " (" << setw(4) << ")";
+        break;
     case IndexedIndirect:
-        return name + " (" + toHexString(address, 2) + ", X)";
+        os << name << " (" << setw(4) << ", X)";
+        break;
     case IndirectIndexed:
-        return name + " (" + toHexString(address, 4) + "), Y";
+        os << name << " (" << setw(4) << "), Y)";
+        break;
     case Immediate:
-        return name + " #" + toHexString(address, 2);
+        os << name << " #" << setw(2) << address;
+        break;
     case Relative:
-        return name + toHexString(static_cast<Byte>(address), 2);
+        os << name << " " << std::showpos << setw(2)
+           << static_cast<int>(static_cast<Byte>(address));
+        break;
     case Implied:
     case Accumulator:
-        return "";
+        break;
     }
+    return os.str();
 }
 
 void Cpu::ADC(uint16_t address)
@@ -562,7 +648,8 @@ void Cpu::RTS(uint16_t)
 {
     // TODO: check this instruction size
     _pc = pull16() + 1;
-    assert(instruction_lookup_table[_pc - 3].name == "JSR");
+    assert(strcmp(instruction_lookup_table[_mmc->read(_pc) - 3].name, "JSR") ==
+           0);
 }
 void Cpu::SBC(uint16_t address)
 {
@@ -613,7 +700,4 @@ void Cpu::TYA(uint16_t)
     _p.zero = ~_a;
     _p.negative = _a & 0x80;
 }
-void Cpu::XXX(uint16_t)
-{
-    throw runtime_error{"Cpu: Invalid opcode"};
-}
+void Cpu::XXX(uint16_t) { throw runtime_error{"Cpu: Invalid opcode"}; }

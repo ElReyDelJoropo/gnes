@@ -38,7 +38,7 @@ class Cpu {
     static constexpr std::uint16_t IRQ_ADDRESS = 0xFFFE;
 
     static const struct instruction {
-        std::string name;
+        const char *name;
         void (Cpu::*func)(std::uint16_t);
         AddressingMode addressing_mode;
         int cycle_lenght;
@@ -98,7 +98,7 @@ class Cpu {
     static bool isPageCrossed(std::uint16_t, std::uint16_t);
 
     void dumpCpuState(std::uint16_t);
-    std::string assembleInstruction(std::string, std::uint16_t);
+    std::string assembleInstruction(const char *, std::uint16_t) const;
     std::string statusRegisterToString();
     // Instructions
     void ADC(std::uint16_t);

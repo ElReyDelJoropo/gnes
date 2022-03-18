@@ -29,20 +29,20 @@ struct RomInfo {
 
 class Cartrigde {
   public:
-    Cartrigde(InterruptLine &, LogModule &);
+    Cartrigde(InterruptLine *, LogModule *);
     void load(std::filesystem::path &);
 
-    uByte read(std::uint16_t);
-    void write(std::uint16_t, uByte);
+    uByte read(std::uint16_t address);
+    void write(std::uint16_t address, uByte b);
 
   private:
-    InterruptLine &_interrupt_line;
-    LogModule &_log_module;
+    InterruptLine *_interrupt_line;
+    LogModule *_log_module;
     std::unique_ptr<Mapper> _mapper;
     RomInfo _rom_info;
     std::vector<uByte> _raw_data;
 
-    int parseHeader(char[16]);
+    int parseHeader(char h[16]);
     std::unique_ptr<Mapper> makeMapper();
     void dumpRomInfo();
 };

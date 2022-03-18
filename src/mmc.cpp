@@ -7,8 +7,8 @@ using std::uint16_t;
 
 using namespace gnes;
 
-Mmc::Mmc(Cartrigde &c) : _cartrigde(c) { powerUp(); }
-void Mmc::powerUp() { std::memset(_ram, 0x0, 0x800); }
+Mmc::Mmc(Cartrigde *c) : _cartrigde(c) { powerUp(); }
+void Mmc::powerUp() { _ram.fill(0x00); }
 uByte Mmc::read(uint16_t address)
 {
     switch (address) {
@@ -23,7 +23,7 @@ uByte Mmc::read(uint16_t address)
         break;
     // Cartrigde space
     case 0x4020 ... 0xFFFF:
-        return _cartrigde.read(address);
+        return _cartrigde->read(address);
     default:
         break;
     }

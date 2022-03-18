@@ -8,14 +8,13 @@
 namespace gnes {
 // enum class BufferID {Cpu, Ppu, Apu, Cartrigde, None };
 
-enum BufferID {CpuID, PpuID, ApuID, CartrigdeID };
-
-#ifndef NDEBUG
+enum BufferID { CpuID, PpuID, ApuID, CartrigdeID };
 
 class LogModule {
   public:
     LogModule()
     {
+#ifndef NDEBUG
         _resources[BufferID::CpuID].file.open("cpu.txt");
         _resources[BufferID::PpuID].file.open("ppu.txt");
         _resources[BufferID::ApuID].file.open("apu.txt");
@@ -27,25 +26,21 @@ class LogModule {
             !_resources[BufferID::CartrigdeID].file)
             throw std::runtime_error{"LogModule: unable to create logfiles"};
     }
-    ~LogModule(){
+    ~LogModule()
+    {
         for (auto &resource : _resources)
             resource.file << resource.buffer.str();
-        
     }
-    std::ostringstream& getBuffer(BufferID id){
+#endif
+    std::ostringstream &getBuffer(BufferID id)
+    {
         return _resources[static_cast<int>(id)].buffer;
     }
+
   private:
     struct {
         std::ostringstream buffer;
         std::ofstream file;
     } _resources[4];
-
 };
-#else
-
-class LogModule {
-    LogModule() = default;
-};
-#endif
 } // namespace gnes

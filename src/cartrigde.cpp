@@ -23,8 +23,8 @@ using std::runtime_error;
 
 using namespace gnes;
 
-Cartrigde::Cartrigde(InterruptLine &line, LogModule &logm)
-    : _interrupt_line(line), _log_module(logm)
+Cartrigde::Cartrigde(InterruptLine *line, LogModule *logm)
+    : _interrupt_line(line), _log_module(logm), _rom_info{}
 {
 }
 
@@ -99,22 +99,19 @@ std::unique_ptr<Mapper> Cartrigde::makeMapper()
 {
     switch (_rom_info.mapper_number) {
     case 0:
-        return make_unique<Mapper_000>(&_rom_info, _interrupt_line, _raw_data);
+        return make_unique<Mapper_000>(&_rom_info, _raw_data);
     default:
         return nullptr;
     }
 }
 void Cartrigde::dumpRomInfo()
 {
-    _log_module.setBufferID(BufferID::CartrigdeID);
-    _log_module << "+++ ROM INFO +++\n"
-                << "PRG ROM units: " << setw(2) << _rom_info.PRG_ROM_units
-                << '\n'
-                << "chr rom units: " << setw(2) << _rom_info.CHR_ROM_units
-                << '\n'
-                << "mapper number: " << setw(3) << setfill('0')
-                << _rom_info.mapper_number << '\n'
-                << setfill(' ') << "mirroring: "
-                << (_rom_info.mirroring == 1 ? "vertical" : "horizontal")
-                << '\n';
+    _log_module->getBuffer(BufferID::CartrigdeID)
+        << "+++ ROM INFO +++\n"
+        << "PRG ROM units: " << setw(2) << _rom_info.PRG_ROM_units << '\n'
+        << "chr rom units: " << setw(2) << _rom_info.CHR_ROM_units << '\n'
+        << "mapper number: " << setw(3) << setfill('0')
+        << _rom_info.mapper_number << '\n'
+        << setfill(' ') << "mirroring: "
+        << (_rom_info.mirroring == 1 ? "vertical" : "horizontal") << '\n';
 }

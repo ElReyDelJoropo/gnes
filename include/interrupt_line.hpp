@@ -13,6 +13,6 @@ enum class InterruptType { None, Irq, Nmi, Reset};
                 setInterrupt(InterruptType::None);
             }
         private:
-        InterruptType _interrupt;
+        InterruptType _interrupt{InterruptType::None};
     };
 }
