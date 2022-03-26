@@ -1,14 +1,14 @@
 #pragma once
-#include "cartrigde.hpp"
+#include "Cartrigde.hpp"
 #include "types.hpp"
 
 #include <array>
 
 namespace gnes {
 
-class Mmc {
+class CpuBus {
   public:
-      Mmc(Cartrigde *);
+      CpuBus(Cartrigde *);
     uByte read(std::uint16_t address);
     std::uint16_t read16(std::uint16_t address);
     std::uint16_t read16Bug(std::uint16_t address);

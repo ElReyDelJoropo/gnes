@@ -1,9 +1,9 @@
 #pragma once
-#include "cpu.hpp"
-#include "cartrigde.hpp"
-#include "interrupt_line.hpp"
-#include "log_buffer.hpp"
-#include "mmc.hpp"
+#include "Cpu.hpp"
+#include "Cartrigde.hpp"
+#include "InterruptLine.hpp"
+#include "LogModule.hpp"
+#include "CpuBus.hpp"
 
 #include <filesystem>
 
@@ -13,7 +13,7 @@ namespace gnes{
         Emulator();
         void run(std::filesystem::path);
         private:
-            Mmc _mmc;
+            CpuBus _cpu_bus;
             Cpu _cpu;
             Cartrigde _cartrigde;
             InterruptLine _interrupt_line;

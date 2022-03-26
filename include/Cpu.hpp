@@ -1,8 +1,8 @@
 #pragma once
 
-#include "interrupt_line.hpp"
-#include "log_buffer.hpp"
-#include "mmc.hpp"
+#include "InterruptLine.hpp"
+#include "LogModule.hpp"
+#include "CpuBus.hpp"
 #include "types.hpp"
 
 #include <string>
@@ -27,7 +27,7 @@ enum AddressingMode {
 
 class Cpu {
   public:
-    Cpu(Mmc *, InterruptLine *, LogModule *);
+    Cpu(CpuBus *, InterruptLine *, LogModule *);
 
     void step();
     void powerUp();
@@ -47,14 +47,14 @@ class Cpu {
     } instruction_lookup_table[0x100];
     static const std::uint16_t instruction_sizes[13];
 
-    uByte _x, _y;      // X and Y registers
-    uByte _sp;         // Stack pointer
-    uByte _a;          // Accumulator
-    std::uint16_t _pc; // Program counter
+    uByte _x{};
+    uByte _y{};      // X and Y registers
+    uByte _sp{};         // Stack pointer
+    uByte _a{};          // Accumulator
+    std::uint16_t _pc{}; // Program counter
     // XXX: An obscure but efficient approach
     union {
         struct {
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
             uByte carry : 1;
             uByte zero : 1;
             uByte interrupt_disable : 1;
@@ -63,24 +63,14 @@ class Cpu {
             uByte unused : 1;
             uByte overflow : 1;
             uByte negative : 1;
-#else
-            uByte negative : 1;
-            uByte overflow : 1;
-            uByte unused : 1;
-            uByte brk : 1;
-            uByte decimal : 1;
-            uByte interrupt_disable : 1;
-            uByte zero : 1;
-            uByte carry : 1;
-#endif
         };
         uByte data;
-    } _p;
+    } _p{};
 
-    uByte _opcode;
+    uByte _opcode{};
+    int _cycles{};
 
-    int _cycles;
-    Mmc *_mmc;
+    CpuBus *_bus;
     InterruptLine *_interrupt_line;
     LogModule *_log_module;
 

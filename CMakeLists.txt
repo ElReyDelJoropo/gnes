@@ -19,10 +19,10 @@ add_compile_options(
 set(SOURCES
     "src/main.cpp"
     "src/Emulator.cpp"
-    "src/cartrigde.cpp"
-    "src/cpu.cpp"
-    "src/mmc.cpp"
-    "src/mappers/mapper_000.cpp")
+    "src/Cartrigde.cpp"
+    "src/Cpu.cpp"
+    "src/CpuBus.cpp"
+    "src/mappers/Mapper_000.cpp")
 
 find_package(SFML COMPONENTS audio graphics system window REQUIRED)
 

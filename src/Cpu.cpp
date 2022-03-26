@@ -1,4 +1,4 @@
-#include "cpu.hpp"
+#include "Cpu.hpp"
 
 #include <cassert>
 #include <cstring>
@@ -305,8 +305,8 @@ const struct Cpu::instruction Cpu::instruction_lookup_table[0x100] = {
     {"XXX", &Cpu::XXX, Implied, 0},
 };
 
-Cpu::Cpu(Mmc *m, InterruptLine *i, LogModule *l)
-    : _mmc(m), _interrupt_line(i), _log_module(l)
+Cpu::Cpu(CpuBus *b, InterruptLine *i, LogModule *l)
+    : _bus(b), _interrupt_line(i), _log_module(l)
 {
     powerUp();
     reset();
@@ -327,7 +327,7 @@ void Cpu::step()
 {
     handleInterrupt();
 
-    _opcode = _mmc->read(_pc);
+    _opcode = _bus->read(_pc);
     uint16_t address =
         translateAddress(instruction_lookup_table[_opcode].addressing_mode);
     dumpCpuState(address);
@@ -341,29 +341,29 @@ uint16_t Cpu::translateAddress(AddressingMode mode)
     uint16_t temp;
     switch (mode) {
     case ZeroPage:
-        return _mmc->read(_pc + 1);
+        return _bus->read(_pc + 1);
     case ZeroPageX:
-        return _mmc->read(_pc + 1) + _x & 0xFF; // Wrapped around
+        return _bus->read(_pc + 1) + _x & 0xFF; // Wrapped around
     case ZeroPageY:
-        return _mmc->read(_pc + 1) + _y & 0xFF;
+        return _bus->read(_pc + 1) + _y & 0xFF;
     case Absolute:
-        return _mmc->read16(_pc + 1);
+        return _bus->read16(_pc + 1);
     case AbsoluteX:
-        temp = _mmc->read16(_pc + 1);
+        temp = _bus->read16(_pc + 1);
         if (isPageCrossed(temp, temp + _x))
             ++_cycles;
         return temp + _x;
     case AbsoluteY:
-        temp = _mmc->read16(_pc + 1);
+        temp = _bus->read16(_pc + 1);
         if (isPageCrossed(temp, temp + _y))
             ++_cycles;
         return temp + _y;
     case Indirect:
-        return _mmc->read16Bug(_mmc->read16(_pc + 1));
+        return _bus->read16Bug(_bus->read16(_pc + 1));
     case IndexedIndirect:
-        return _mmc->read16(_mmc->read(_pc + 1) + _x);
+        return _bus->read16(_bus->read(_pc + 1) + _x);
     case IndirectIndexed:
-        temp = _mmc->read16(_mmc->read(_pc + 1));
+        temp = _bus->read16(_bus->read(_pc + 1));
         if (isPageCrossed(temp, temp + _y))
             ++_cycles;
         return temp + _y;
@@ -398,7 +398,7 @@ void Cpu::handleInterrupt()
     _p.interrupt_disable = 1;
     push16(_pc);
     push(_p.data);
-    _pc = _mmc->read16(vector_address);
+    _pc = _bus->read16(vector_address);
     // XXX: this should be done here?
     _cycles += 7; // Cycles per interrupt handling
     _interrupt_line->clear();
@@ -406,7 +406,7 @@ void Cpu::handleInterrupt()
 
 void Cpu::push(uByte b)
 {
-    _mmc->write(_sp | 0x100, b);
+    _bus->write(_sp | 0x100, b);
     --_sp; // Stack grows downward
 }
 void Cpu::push16(uint16_t b)
@@ -415,7 +415,7 @@ void Cpu::push16(uint16_t b)
     push(b);
 }
 
-uByte Cpu::pull() { return _mmc->read(++_sp | 0x100); }
+uByte Cpu::pull() { return _bus->read(++_sp | 0x100); }
 uint16_t Cpu::pull16()
 {
     uint16_t low = pull();
@@ -427,7 +427,7 @@ uint16_t Cpu::pull16()
 void Cpu::branch(uint16_t address)
 {
     // XXX: Check that cpu branchs correctly
-    Byte displacement = static_cast<Byte>(_mmc->read(address)); // Signed byte
+    Byte displacement = static_cast<Byte>(_bus->read(address)); // Signed byte
 
     if (isPageCrossed(_pc, _pc + displacement))
         _cycles += 2;
@@ -491,7 +491,7 @@ string Cpu::assembleInstruction(const char *name, uint16_t address) const
         break;
     case Immediate:
         os << name << " #"
-           << "$" << setw(2) << hex << (int)_mmc->read(address);
+           << "$" << setw(2) << hex << (int)_bus->read(address);
         break;
     case Relative:
         os << name << " " << std::showpos << setw(2)
@@ -521,7 +521,7 @@ string Cpu::statusRegisterToString() const
 
 void Cpu::ADC(uint16_t address)
 {
-    uByte temp = _mmc->read(address);
+    uByte temp = _bus->read(address);
     uint16_t result = _a + temp + _p.carry;
 
     _p.zero = ~_a;
@@ -533,7 +533,7 @@ void Cpu::ADC(uint16_t address)
 }
 void Cpu::AND(uint16_t address)
 {
-    _a &= _mmc->read(address);
+    _a &= _bus->read(address);
     _p.zero = ~_a;
     _p.negative = _a & 0x80;
 }
@@ -545,13 +545,13 @@ void Cpu::ASL(std::uint16_t address)
         _p.zero = ~_a;
         _p.negative = _a & 0x80;
     } else {
-        uByte temp = _mmc->read(address);
+        uByte temp = _bus->read(address);
 
         _p.carry = temp & 0x80;
         temp <<= 1;
         _p.zero = ~temp;
         _p.negative = temp & 0x80;
-        _mmc->write(address, temp);
+        _bus->write(address, temp);
     }
 }
 void Cpu::BCC(uint16_t address)
@@ -571,7 +571,7 @@ void Cpu::BEQ(uint16_t address)
 }
 void Cpu::BIT(uint16_t address)
 {
-    uByte temp = _mmc->read(address);
+    uByte temp = _bus->read(address);
 
     _p.overflow = temp & 0x40;
     _p.negative = temp & 0x70;
@@ -615,7 +615,7 @@ void Cpu::CLV(uint16_t) { _p.overflow = 0; }
 void Cpu::CMP(uint16_t address)
 {
     // XXX: This function is weird
-    uByte temp = _mmc->read(address);
+    uByte temp = _bus->read(address);
 
     _p.carry = _a >= temp;
     _p.zero = _a == temp;
@@ -625,7 +625,7 @@ void Cpu::CMP(uint16_t address)
 void Cpu::CPX(uint16_t address)
 {
     // XXX: This function is weird
-    uByte temp = _mmc->read(address);
+    uByte temp = _bus->read(address);
 
     _p.carry = _x >= temp;
     _p.zero = _x == temp;
@@ -635,7 +635,7 @@ void Cpu::CPX(uint16_t address)
 void Cpu::CPY(uint16_t address)
 {
     // XXX: This function is weird
-    uByte temp = _mmc->read(address);
+    uByte temp = _bus->read(address);
 
     _p.carry = _y >= temp;
     _p.zero = _y == temp;
@@ -644,53 +644,53 @@ void Cpu::CPY(uint16_t address)
 }
 void Cpu::DEC(uint16_t address)
 {
-    uByte temp = _mmc->read(address);
+    uByte temp = _bus->read(address);
     --temp;
     _p.zero = ~temp;
     _p.negative = temp & 0x80;
-    _mmc->write(address, temp);
+    _bus->write(address, temp);
 }
 void Cpu::DEX(uint16_t address)
 {
     --_x;
     _p.zero = ~_x;
     _p.negative = _x & 0x80;
-    _mmc->write(address, _x);
+    _bus->write(address, _x);
 }
 void Cpu::DEY(uint16_t address)
 {
     --_y;
     _p.zero = ~_y;
     _p.negative = _y & 0x80;
-    _mmc->write(address, _y);
+    _bus->write(address, _y);
 }
 void Cpu::EOR(uint16_t address)
 {
-    _a ^= _mmc->read(address);
+    _a ^= _bus->read(address);
     _p.zero = ~_a;
     _p.negative = _a & 0x80;
 }
 void Cpu::INC(uint16_t address)
 {
-    uByte temp = _mmc->read(address);
+    uByte temp = _bus->read(address);
     ++temp;
     _p.zero = ~temp;
     _p.negative = temp & 0x80;
-    _mmc->write(address, temp);
+    _bus->write(address, temp);
 }
 void Cpu::INX(uint16_t address)
 {
     ++_x;
     _p.zero = ~_x;
     _p.negative = _x & 0x80;
-    _mmc->write(address, _x);
+    _bus->write(address, _x);
 }
 void Cpu::INY(uint16_t address)
 {
     ++_y;
     _p.zero = ~_y;
     _p.negative = _y & 0x80;
-    _mmc->write(address, _y);
+    _bus->write(address, _y);
 }
 void Cpu::JMP(uint16_t address)
 {
@@ -706,19 +706,19 @@ void Cpu::JSR(uint16_t address)
 }
 void Cpu::LDA(uint16_t address)
 {
-    _a = _mmc->read(address);
+    _a = _bus->read(address);
     _p.zero = ~_a;
     _p.negative = _a & 0x80;
 }
 void Cpu::LDX(uint16_t address)
 {
-    _x = _mmc->read(address);
+    _x = _bus->read(address);
     _p.zero = ~_x;
     _p.negative = _x & 0x80;
 }
 void Cpu::LDY(uint16_t address)
 {
-    _y = _mmc->read(address);
+    _y = _bus->read(address);
     _p.zero = ~_y;
     _p.negative = _y & 0x80;
 }
@@ -730,18 +730,18 @@ void Cpu::LSR(uint16_t address)
         _p.zero = ~_a;
         _p.negative = _a & 0x80;
     } else {
-        uByte temp = _mmc->read(address);
+        uByte temp = _bus->read(address);
         _p.carry = temp & 0x1;
         temp >>= 1;
         _p.zero = ~temp;
         _p.negative = temp & 0x80;
-        _mmc->write(address, temp);
+        _bus->write(address, temp);
     }
 }
 void Cpu::NOP(uint16_t) {}
 void Cpu::ORA(uint16_t address)
 {
-    _a |= _mmc->read(address);
+    _a |= _bus->read(address);
     _p.zero = ~_a;
     _p.negative = _a & 0x80;
 }
@@ -766,7 +766,7 @@ void Cpu::ROL(uint16_t address)
         _p.zero = ~_a;
         _p.negative = _a & 0x80;
     } else {
-        uByte temp = _mmc->read(address);
+        uByte temp = _bus->read(address);
         _p.carry = temp & 0x80;
         temp = temp << 1 | old_carry;
         _p.zero = ~temp;
@@ -785,7 +785,7 @@ void Cpu::ROR(uint16_t address)
         _p.zero = ~_a;
         _p.negative = _a & 0x80;
     } else {
-        uByte temp = _mmc->read(address);
+        uByte temp = _bus->read(address);
         _p.carry = temp & 0x1;
         temp = temp >> 1 | old_carry;
         _p.zero = ~temp;
@@ -801,13 +801,13 @@ void Cpu::RTS(uint16_t)
 {
     // TODO: check this instruction size
     _pc = pull16() + 1;
-    assert(strcmp(instruction_lookup_table[_mmc->read(_pc) - 3].name, "JSR") ==
+    assert(strcmp(instruction_lookup_table[_bus->read(_pc) - 3].name, "JSR") ==
            0);
 }
 void Cpu::SBC(uint16_t address)
 {
     // XXX: take care about this function
-    uByte b = _mmc->read(address);
+    uByte b = _bus->read(address);
     uint16_t result = _a - b - ~_p.carry;
 
     _p.zero = ~result;
@@ -819,9 +819,9 @@ void Cpu::SBC(uint16_t address)
 void Cpu::SEC(uint16_t) { _p.carry = 1; }
 void Cpu::SED(uint16_t) { _p.decimal = 1; }
 void Cpu::SEI(uint16_t) { _p.interrupt_disable = 1; }
-void Cpu::STA(uint16_t address) { _mmc->write(address, _a); }
-void Cpu::STX(uint16_t address) { _mmc->write(address, _x); }
-void Cpu::STY(uint16_t address) { _mmc->write(address, _y); }
+void Cpu::STA(uint16_t address) { _bus->write(address, _a); }
+void Cpu::STX(uint16_t address) { _bus->write(address, _x); }
+void Cpu::STY(uint16_t address) { _bus->write(address, _y); }
 void Cpu::TAX(uint16_t)
 {
     _x = _a;

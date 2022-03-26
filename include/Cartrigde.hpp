@@ -1,7 +1,7 @@
 #pragma once
-#include "interrupt_line.hpp"
-#include "mapper.hpp"
-#include "log_buffer.hpp"
+#include "InterruptLine.hpp"
+#include "Mapper.hpp"
+#include "LogModule.hpp"
 #include "types.hpp"
 
 #include <filesystem>

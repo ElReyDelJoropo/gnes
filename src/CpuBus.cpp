@@ -1,5 +1,5 @@
-#include "mmc.hpp"
-#include "cartrigde.hpp"
+#include "CpuBus.hpp"
+#include "Cartrigde.hpp"
 
 #include <cstdint>
 #include <cstring>
@@ -7,9 +7,9 @@ using std::uint16_t;
 
 using namespace gnes;
 
-Mmc::Mmc(Cartrigde *c) : _cartrigde(c) { powerUp(); }
-void Mmc::powerUp() { _ram.fill(0x00); }
-uByte Mmc::read(uint16_t address)
+CpuBus::CpuBus(Cartrigde *c) : _cartrigde(c) { powerUp(); }
+void CpuBus::powerUp() { _ram.fill(0x00); }
+uByte CpuBus::read(uint16_t address)
 {
     switch (address) {
     // Internal ram
@@ -30,14 +30,14 @@ uByte Mmc::read(uint16_t address)
 
     return 0;
 }
-uint16_t Mmc::read16(uint16_t address)
+uint16_t CpuBus::read16(uint16_t address)
 {
     uint16_t low = read(address);
     uint16_t high = read(address + 1);
 
     return high << 8 | low;
 }
-uint16_t Mmc::read16Bug(uint16_t address)
+uint16_t CpuBus::read16Bug(uint16_t address)
 {
     uint16_t page = address & 0xFF00;
     uint16_t low = read(address);
@@ -45,7 +45,7 @@ uint16_t Mmc::read16Bug(uint16_t address)
 
     return high << 8 | low;
 }
-void Mmc::write(uint16_t address, uByte b){
+void CpuBus::write(uint16_t address, uByte b){
     switch (address) {
     // Internal ram
     case 0x0 ... 0x1FFF:

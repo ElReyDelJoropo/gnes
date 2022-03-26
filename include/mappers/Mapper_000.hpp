@@ -1,7 +1,7 @@
 #pragma once
 
-#include "interrupt_line.hpp"
-#include "mapper.hpp"
+#include "InterruptLine.hpp"
+#include "Mapper.hpp"
 
 #include <vector>
 

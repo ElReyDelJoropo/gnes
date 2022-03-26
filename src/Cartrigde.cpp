@@ -1,7 +1,7 @@
-#include "cartrigde.hpp"
-#include "log_buffer.hpp"
-#include "mapper.hpp"
-#include "mappers/mapper_000.hpp"
+#include "Cartrigde.hpp"
+#include "LogModule.hpp"
+#include "Mapper.hpp"
+#include "mappers/Mapper_000.hpp"
 
 #include <cerrno>
 #include <cstdint>

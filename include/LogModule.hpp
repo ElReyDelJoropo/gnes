@@ -15,10 +15,10 @@ class LogModule {
     LogModule()
     {
 #ifndef NDEBUG
-        _resources[BufferID::CpuID].file.open("cpu.txt");
-        _resources[BufferID::PpuID].file.open("ppu.txt");
-        _resources[BufferID::ApuID].file.open("apu.txt");
-        _resources[BufferID::CartrigdeID].file.open("cartrigde.txt");
+        _resources[BufferID::CpuID].file.open("log/cpu.log");
+        _resources[BufferID::PpuID].file.open("log/ppu.log");
+        _resources[BufferID::ApuID].file.open("log/apu.log");
+        _resources[BufferID::CartrigdeID].file.open("log/cartrigde.log");
 
         if (!_resources[BufferID::CpuID].file ||
             !_resources[BufferID::PpuID].file ||

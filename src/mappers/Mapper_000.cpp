@@ -1,6 +1,6 @@
-#include "mappers/mapper_000.hpp"
-#include "cartrigde.hpp"
-#include "interrupt_line.hpp"
+#include "mappers/Mapper_000.hpp"
+#include "Cartrigde.hpp"
+#include "InterruptLine.hpp"
 
 #include <cstdint>
 using std::uint16_t;
