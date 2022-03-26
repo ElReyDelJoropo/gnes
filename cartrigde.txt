@@ -1,0 +1,5 @@
++++ ROM INFO +++
+PRG ROM units:  1
+chr rom units:  1
+mapper number: 000
+mirroring: horizontal

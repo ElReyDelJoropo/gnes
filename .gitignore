@@ -1,5 +1,9 @@
 build/
 bin/
 docs/
+games/
+log/
+test/
 .cache/
 compile_commands.json
+*.nes

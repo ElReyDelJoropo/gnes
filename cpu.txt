@@ -1,0 +1,600 @@
+-> SEI
+PC: $c004
+A: $00
+X: $00	Y: $00
+SP: $fa
+P: **I*BU**
+-> CLD
+PC: $c005
+A: $00
+X: $00	Y: $00
+SP: $fa
+P: **I*BU**
+-> LDX #$ff
+PC: $c006
+A: $00
+X: $00	Y: $00
+SP: $fa
+P: **I*BU**
+-> TXS
+PC: $c008
+A: $00
+X: $ff	Y: $00
+SP: $fa
+P: **I*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: **I*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> LDA $2002
+PC: $c009
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
+-> BPL +13
+PC: $c00c
+A: $00
+X: $ff	Y: $00
+SP: $ff
+P: *ZI*BU**
