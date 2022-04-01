@@ -28,8 +28,10 @@ Cartrigde::Cartrigde(InterruptLine *line, LogModule *logm)
 {
 }
 
-uByte Cartrigde::read(uint16_t a) { return _mapper->read(a); }
-void Cartrigde::write(uint16_t a, uByte b) { _mapper->write(a, b); }
+uByte Cartrigde::readPrg(uint16_t a) const { return _mapper->readPrg(a); }
+uByte Cartrigde::readChr(uint16_t a) const { return _mapper->readChr(a); }
+void Cartrigde::writePrg(uint16_t a, uByte b) { _mapper->writePrg(a, b); }
+void Cartrigde::writeChr(uint16_t a, uByte b) { _mapper->writeChr(a, b); }
 
 void Cartrigde::load(path &game_path)
 {

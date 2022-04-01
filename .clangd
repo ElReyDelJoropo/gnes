@@ -1,4 +1,4 @@
 Diagnostics:
     ClangTidy:
         Add: [modernize*,abseil*,bugprone*,cppcoreguidelines*,performance*,readability*]
-        Remove: [modernize-use-trailing-return-type, modernize-avoid-c-arrays, cppcoreguidelines-pro-type-union-access, cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,readability-named-parameter, cppcoreguidelines-pro-bounds-array-to-pointer-decay,readability-braces-around-statements]
+        Remove: [modernize-use-trailing-return-type, modernize-avoid-c-arrays, cppcoreguidelines-pro-type-union-access, cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,readability-named-parameter, cppcoreguidelines-pro-bounds-array-to-pointer-decay,readability-braces-around-statements,cppcoreguidelines-special-members-function]

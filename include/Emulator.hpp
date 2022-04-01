@@ -1,9 +1,11 @@
 #pragma once
-#include "Cpu.hpp"
 #include "Cartrigde.hpp"
+#include "Cpu.hpp"
+#include "CpuBus.hpp"
 #include "InterruptLine.hpp"
 #include "LogModule.hpp"
-#include "CpuBus.hpp"
+#include "Ppu.hpp"
+#include "VirtualScreen.hpp"
 
 #include <filesystem>
 
@@ -15,9 +17,11 @@ namespace gnes{
         private:
             CpuBus _cpu_bus;
             Cpu _cpu;
+            Ppu _ppu;
             Cartrigde _cartrigde;
             InterruptLine _interrupt_line;
             LogModule _log_module;
+            VirtualScreen _virtual_screen;
 
             void tick();
     };

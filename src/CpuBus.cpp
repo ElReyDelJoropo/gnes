@@ -7,8 +7,8 @@ using std::uint16_t;
 
 using namespace gnes;
 
-CpuBus::CpuBus(Cartrigde *c) : _cartrigde(c) { powerUp(); }
-void CpuBus::powerUp() { _ram.fill(0x00); }
+CpuBus::CpuBus(Cartrigde *c) : _ram{}, _cartrigde(c) { powerUp(); }
+void CpuBus::powerUp() {}
 uByte CpuBus::read(uint16_t address)
 {
     switch (address) {
@@ -23,7 +23,7 @@ uByte CpuBus::read(uint16_t address)
         break;
     // Cartrigde space
     case 0x4020 ... 0xFFFF:
-        return _cartrigde->read(address);
+        return _cartrigde->readPrg(address);
     default:
         break;
     }
@@ -58,7 +58,7 @@ void CpuBus::write(uint16_t address, uByte b){
         break;
     // Cartrigde space
     case 0x4020 ... 0xFFFF:
-        _cartrigde->write(address,b);
+        _cartrigde->writePrg(address,b);
     default:
         break;
     }

@@ -4,8 +4,8 @@
 #include <cstring>
 #include <iomanip>
 using std::hex;
-using std::setw;
 using std::setfill;
+using std::setw;
 #include <sstream>
 using std::ostringstream;
 #include <string>
@@ -443,30 +443,26 @@ bool Cpu::isPageCrossed(uint16_t a, uint16_t b)
 void Cpu::dumpCpuState(uint16_t address)
 {
     _log_module->getBuffer(BufferID::CpuID)
-        << "-> "
         << assembleInstruction(instruction_lookup_table[_opcode].name, address)
-        << setfill('0') << '\n'
-        << "PC: $" << setw(4) << hex << (int)_pc << '\n'
-        << "A: $" << setw(2) << (int)_a << '\n'
-        << "X: $" << setw(2) << (int)_x << '\t' << "Y: $" << setw(2) << (int)_y
-        << '\n'
-        << "SP: $" << setw(2) << (int)_sp << '\n'
-        << "P: " << statusRegisterToString() << '\n';
+        << '\t' << setfill('0') << "PC: $" << setw(4) << hex << (int)_pc << '\t'
+        << "A: $" << setw(2) << (int)_a << '\t' << "X: $" << setw(2) << (int)_x
+        << '\t' << "Y: $" << setw(2) << (int)_y << '\t' << "SP: $" << setw(2)
+        << (int)_sp << '\t' << "P: " << statusRegisterToString() << '\n';
 }
 string Cpu::assembleInstruction(const char *name, uint16_t address) const
 {
     ostringstream os;
-    os.setf(std::ios::hex);
+    os.setf(std::ios::hex | std::ios::left);
 
     switch (instruction_lookup_table[_opcode].addressing_mode) {
     case ZeroPage:
-        os << name << " $" << setw(2) << hex << address;
+        os << name << " $" << setw(4) << hex << address;
         break;
     case ZeroPageX:
-        os << name << " $" << setw(2) << hex << address << ", X";
+        os << name << " $" << setw(4) << hex << address << ", X";
         break;
     case ZeroPageY:
-        os << name << " $" << setw(2) << hex << address << ", Y";
+        os << name << " $" << setw(4) << hex << address << ", Y";
         break;
     case Absolute:
         os << name << " $" << setw(4) << hex << address;
@@ -491,15 +487,15 @@ string Cpu::assembleInstruction(const char *name, uint16_t address) const
         break;
     case Immediate:
         os << name << " #"
-           << "$" << setw(2) << hex << (int)_bus->read(address);
+           << "$" << setw(3) << hex << (int)_bus->read(address);
         break;
     case Relative:
-        os << name << " " << std::showpos << setw(2)
+        os << name << " " << std::showpos << setw(4)
            << static_cast<int>(static_cast<Byte>(address));
         break;
     case Implied:
     case Accumulator:
-        os << name;
+        os << name << setw(6) << ' ';
         break;
     }
     return os.str();

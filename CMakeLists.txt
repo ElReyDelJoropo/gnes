@@ -22,7 +22,11 @@ set(SOURCES
     "src/Cartrigde.cpp"
     "src/Cpu.cpp"
     "src/CpuBus.cpp"
-    "src/mappers/Mapper_000.cpp")
+    "src/mappers/Mapper_000.cpp"
+    "src/Ppu.cpp"
+    "src/VirtualScreen.cpp"
+    "src/PpuBus.cpp"
+    )
 
 find_package(SFML COMPONENTS audio graphics system window REQUIRED)
 
@@ -34,3 +38,4 @@ set_target_properties(gnes
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin"
     )
 target_include_directories(gnes PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_link_libraries(gnes PUBLIC sfml-graphics sfml-system sfml-window)

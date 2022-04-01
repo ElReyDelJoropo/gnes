@@ -1,7 +1,7 @@
 #pragma once
 #include "InterruptLine.hpp"
-#include "Mapper.hpp"
 #include "LogModule.hpp"
+#include "Mapper.hpp"
 #include "types.hpp"
 
 #include <filesystem>
@@ -32,8 +32,10 @@ class Cartrigde {
     Cartrigde(InterruptLine *, LogModule *);
     void load(std::filesystem::path &);
 
-    uByte read(std::uint16_t address);
-    void write(std::uint16_t address, uByte b);
+    [[nodiscard]] uByte readPrg(std::uint16_t address) const;
+    [[nodiscard]] uByte readChr(std::uint16_t address) const;
+    void writePrg(std::uint16_t address, uByte b);
+    void writeChr(std::uint16_t address, uByte b);
 
   private:
     InterruptLine *_interrupt_line;
