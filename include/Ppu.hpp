@@ -91,6 +91,9 @@ class Ppu {
     void postRender();
     void reset();
 
+    void incrementX();
+    void incrementY();
+
     public:
     void dumpPatternTable();
 };

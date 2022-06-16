@@ -85,7 +85,9 @@ void Ppu::step()
     }
 }
 
-void Ppu::preRender() {}
+void Ppu::preRender() {
+    //Fill shifts registers to render
+}
 void Ppu::postRender() {}
 void Ppu::render()
 {
@@ -96,19 +98,27 @@ void Ppu::render()
 
     switch (_cycles % 8) {
     case 1:
+        //Fetch nametable byte
         bg_addr = _bus.read(0x2000 | (_v.data & 0xFFF));
         break;
     case 3:
+        //Fetch attribute byte
         palette = _bus.read(bg_addr & 0x2C30);
         break;
     case 5:
+        //Fetch tile byte low
         tile_low = _bus.read(bg_addr);
         break;
     case 7:
+        //Fetch tile byte high
         tile_high = _bus.read(bg_addr + 8);
     default:
         break;
     }
+    //tile = _bus.read(bg_addr);
+    //pixel = _bus.read(page * 0x1000 + tile * 16 + fine_y)
+                //pallete = (tile_high >> (7 - fine_x) & 0x1) << 1 | (tile_low >> (7 - fine_x) & 0x1);
+    incrementX();
 }
 
 void Ppu::dumpPatternTable()
@@ -139,6 +149,29 @@ void Ppu::dumpPatternTable()
                 break;
             }
             _virtual_screen->setPixel(j+8*k,i,color);
+        }
+    }
+}
+void Ppu::incrementX(){
+    if (fine_x != 7)
+        return;
+
+    if (_v.coarse_x == 31){
+        _v.data ^= 0x0400;
+        _v.coarse_x = 0;
+    }
+    else
+        ++_v.data;
+}
+void Ppu::incrementY(){
+    if (_v.fine_y != 7){
+        ++_v.fine_y;
+    }
+    else{
+        _v.fine_y = 0;
+        if (_v.coarse_y == 29){
+            _v.coarse_y = 0;
+            _v.data ^= 0x0800;
         }
     }
 }
