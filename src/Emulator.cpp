@@ -14,9 +14,11 @@ void Emulator::run(path p){
     _cartrigde.load(p);
     _cpu.powerUp();
     _cpu.reset();
-    _ppu.dumpPatternTable();
+    _ppu.reset();
+    //_ppu.dumpPatternTable();
 
     sf::RenderWindow w(sf::VideoMode(VirtualScreen::ScreenWidth,VirtualScreen::ScreenHeight),"Gnes");
+    //w.setFramerateLimit(60);
 
     while(w.isOpen()){
         sf::Event e;
@@ -24,6 +26,7 @@ void Emulator::run(path p){
             if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::Escape)
                 w.close();
         }
+        tick();
         w.draw(_virtual_screen); 
         w.display();
         w.clear();
@@ -36,4 +39,7 @@ void Emulator::run(path p){
 
 void Emulator::tick(){
     _cpu.step();
+    _ppu.step();
+    _ppu.step();
+    _ppu.step();
 }

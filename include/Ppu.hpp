@@ -1,5 +1,6 @@
 #pragma once
 #include "Cartrigde.hpp"
+#include "InterruptLine.hpp"
 #include "PpuBus.hpp"
 #include "VirtualScreen.hpp"
 #include "types.hpp"
@@ -22,16 +23,16 @@ class Ppu {
   public:
       Ppu(VirtualScreen *vs, Cartrigde *c);
     void step();
+    void reset();
     uByte read(std::uint16_t address);
     void write(std::uint16_t address, uByte b);
 
   private:
     PpuBus _bus;
     VirtualScreen *_virtual_screen;
-    PpuRenderingState _state;
-    int _cycles;
-    int _scanline;
-    bool _even;
+    int _cycles = 0;
+    int _scanline = 240;
+    bool _even = false;
 
     union {
         struct {
@@ -43,7 +44,7 @@ class Ppu {
             uByte master : 1;
             uByte raise_nmi : 1;
         };
-        uByte data;
+        uByte data = 0;
     } _ppu_ctrl;
     union {
         struct {
@@ -56,7 +57,7 @@ class Ppu {
             uByte emphasize_green : 1;
             uByte emphasize_blue : 1;
         };
-        uByte data;
+        uByte data = 0;
     } _ppu_mask;
     union {
         struct {
@@ -66,30 +67,29 @@ class Ppu {
             uByte sprite_0_hit : 1;
             uByte vertical_black : 1;
         };
-        uByte data;
+        uByte data = 0;
     } _ppu_status;
-    uByte _oam_addr;
-    uByte _oam_data;
-    uByte _ppu_scroll;
-    struct{
-        union{
+    uByte _oam_addr = 0;
+    uByte _oam_data = 0;
+    uByte _ppu_scroll = 0;
+    union{
+        struct{
             uByte coarse_x:5;
             uByte coarse_y:5;
             uByte nametable_select:2;
             uByte fine_y:3;
             uByte pad:1;
         };
-        std::uint16_t data;
+        std::uint16_t data = 0;
     } _v, _t;
-    int _address_latch;
-    uByte fine_x;
-    uByte _ppu_data;
-    uByte _oam_dma;
+    int _address_latch = 0;
+    uByte fine_x = 0;
+    uByte _ppu_data = 0;
+    uByte _oam_dma = 0;
 
     void preRender();
     void render();
     void postRender();
-    void reset();
 
     void incrementX();
     void incrementY();
