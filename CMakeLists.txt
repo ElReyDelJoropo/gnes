@@ -16,6 +16,7 @@ add_compile_options(
     -Wall
     -Wextra
     )
+
 set(SOURCES
     "src/main.cpp"
     "src/Emulator.cpp"
@@ -27,6 +28,7 @@ set(SOURCES
     "src/VirtualScreen.cpp"
     "src/PpuBus.cpp"
     )
+set(CMAKE_EXPORT_COMPILE_COMMANDS true)
 
 find_package(SFML COMPONENTS audio graphics system window REQUIRED)
 
