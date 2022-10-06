@@ -1,10 +1,11 @@
 #include "Ppu.hpp"
 #include "PpuBus.hpp"
+#include "InterruptLine.hpp"
 #include "VirtualScreen.hpp"
 
 using namespace gnes;
 
-Ppu::Ppu(VirtualScreen *vs, Cartrigde *c) : _bus(c), _virtual_screen(vs){}
+Ppu::Ppu(VirtualScreen *vs, Cartrigde *c, InterruptLine *il) : _bus(c), _virtual_screen(vs), _interrupt_line(il){}
 uByte Ppu::read(uint16_t address)
 {
     uByte ret = 0;
@@ -27,7 +28,7 @@ uByte Ppu::read(uint16_t address)
 void Ppu::reset(){
     _ppu_ctrl.data = 0;
     _ppu_mask.data = 0;
-    _ppu_status.data = 0x80;
+    _ppu_status.data = 0;
     _oam_addr = 0;
     _address_latch = 0;
     _ppu_scroll = 0;
@@ -83,6 +84,7 @@ void Ppu::step()
     case 241:
         _ppu_status.vertical_black = 1;
         if (_ppu_ctrl.raise_nmi)
+            _interrupt_line->setInterrupt(InterruptType::Nmi);
             //TODO: pull nmi flag  
         break;
     default:

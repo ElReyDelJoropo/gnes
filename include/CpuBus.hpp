@@ -1,5 +1,6 @@
 #pragma once
 #include "Cartrigde.hpp"
+#include "Ppu.hpp"
 #include "types.hpp"
 
 #include <array>
@@ -8,7 +9,7 @@ namespace gnes {
 
 class CpuBus {
   public:
-      CpuBus(Cartrigde *);
+      CpuBus(Cartrigde *, Ppu *);
     uByte read(std::uint16_t address);
     std::uint16_t read16(std::uint16_t address);
     std::uint16_t read16Bug(std::uint16_t address);
@@ -17,6 +18,7 @@ class CpuBus {
   private:
     std::array<uByte,0x800> _ram;
     Cartrigde *_cartrigde;
+    Ppu *_ppu;
 
     void powerUp();
     void dma();

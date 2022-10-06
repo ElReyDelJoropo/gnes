@@ -6,7 +6,7 @@ using std::filesystem::path;
 
 using namespace gnes;
 
-Emulator::Emulator(): _cpu_bus(&_cartrigde), _cpu(&_cpu_bus,&_interrupt_line,&_log_module), _ppu(&_virtual_screen,&_cartrigde), _cartrigde(&_interrupt_line,&_log_module){}
+Emulator::Emulator(): _cpu_bus(&_cartrigde,&_ppu), _cpu(&_cpu_bus,&_interrupt_line,&_log_module), _ppu(&_virtual_screen,&_cartrigde,&_interrupt_line), _cartrigde(&_interrupt_line,&_log_module){}
 
 
 

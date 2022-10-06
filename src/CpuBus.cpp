@@ -7,7 +7,7 @@ using std::uint16_t;
 
 using namespace gnes;
 
-CpuBus::CpuBus(Cartrigde *c) : _ram{}, _cartrigde(c) { powerUp(); }
+CpuBus::CpuBus(Cartrigde *c, Ppu *p) : _ram{}, _cartrigde(c), _ppu(p) { powerUp(); }
 void CpuBus::powerUp() {}
 uByte CpuBus::read(uint16_t address)
 {
@@ -17,7 +17,7 @@ uByte CpuBus::read(uint16_t address)
         return _ram[address & 0x7FF];
     // PPU registers
     case 0x2000 ... 0x3FFF:
-        break;
+        return _ppu->read(address & 0x2007);
     // APU
     case 0x4000 ... 0x401F:
         break;
@@ -52,7 +52,7 @@ void CpuBus::write(uint16_t address, uByte b){
         _ram[address & 0x7FF] = b;
     // PPU registers
     case 0x2000 ... 0x3FFF:
-        break;
+        _ppu->write(address,b);
     // APU
     case 0x4000 ... 0x401F:
         break;

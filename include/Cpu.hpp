@@ -55,14 +55,14 @@ class Cpu {
     // XXX: An obscure but efficient approach
     union {
         struct {
-            uByte carry : 1;
-            uByte zero : 1;
-            uByte interrupt_disable : 1;
-            uByte decimal : 1;
-            uByte brk : 1;
-            uByte unused : 1;
-            uByte overflow : 1;
-            uByte negative : 1;
+            bool carry : 1;
+            bool zero : 1;
+            bool interrupt_disable : 1;
+            bool decimal : 1;
+            bool brk : 1;
+            bool unused : 1;
+            bool overflow : 1;
+            bool negative : 1;
         };
         uByte data;
     } _p{};

@@ -21,7 +21,7 @@ enum PpuRenderingState { PreRender, Render, PostRender, VerticalBlank };
 
 class Ppu {
   public:
-      Ppu(VirtualScreen *vs, Cartrigde *c);
+      Ppu(VirtualScreen *vs, Cartrigde *c, InterruptLine *il);
     void step();
     void reset();
     uByte read(std::uint16_t address);
@@ -30,6 +30,7 @@ class Ppu {
   private:
     PpuBus _bus;
     VirtualScreen *_virtual_screen;
+    InterruptLine *_interrupt_line;
     int _cycles = 0;
     int _scanline = 240;
     bool _even = false;

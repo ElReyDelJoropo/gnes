@@ -520,7 +520,7 @@ void Cpu::ADC(uint16_t address)
     uByte temp = _bus->read(address);
     uint16_t result = _a + temp + _p.carry;
 
-    _p.zero = ~_a;
+    _p.zero = !_a;
     _p.negative = _a & 0x80;
     _p.carry = result & 0x100; // The easy way
     _p.overflow = (_a ^ result) & (temp ^ result) & 0x80;
@@ -530,7 +530,7 @@ void Cpu::ADC(uint16_t address)
 void Cpu::AND(uint16_t address)
 {
     _a &= _bus->read(address);
-    _p.zero = ~_a;
+    _p.zero = !_a;
     _p.negative = _a & 0x80;
 }
 void Cpu::ASL(std::uint16_t address)
@@ -538,14 +538,14 @@ void Cpu::ASL(std::uint16_t address)
     if (instruction_lookup_table[_opcode].addressing_mode == Accumulator) {
         _p.carry = _a & 0x80;
         _a <<= 1;
-        _p.zero = ~_a;
+        _p.zero = !_a;
         _p.negative = _a & 0x80;
     } else {
         uByte temp = _bus->read(address);
 
         _p.carry = temp & 0x80;
         temp <<= 1;
-        _p.zero = ~temp;
+        _p.zero = !temp;
         _p.negative = temp & 0x80;
         _bus->write(address, temp);
     }
@@ -642,49 +642,49 @@ void Cpu::DEC(uint16_t address)
 {
     uByte temp = _bus->read(address);
     --temp;
-    _p.zero = ~temp;
+    _p.zero = !temp;
     _p.negative = temp & 0x80;
     _bus->write(address, temp);
 }
 void Cpu::DEX(uint16_t address)
 {
     --_x;
-    _p.zero = ~_x;
+    _p.zero = !_x;
     _p.negative = _x & 0x80;
     _bus->write(address, _x);
 }
 void Cpu::DEY(uint16_t address)
 {
     --_y;
-    _p.zero = ~_y;
+    _p.zero = !_y;
     _p.negative = _y & 0x80;
     _bus->write(address, _y);
 }
 void Cpu::EOR(uint16_t address)
 {
     _a ^= _bus->read(address);
-    _p.zero = ~_a;
+    _p.zero = !_a;
     _p.negative = _a & 0x80;
 }
 void Cpu::INC(uint16_t address)
 {
     uByte temp = _bus->read(address);
     ++temp;
-    _p.zero = ~temp;
+    _p.zero = !temp;
     _p.negative = temp & 0x80;
     _bus->write(address, temp);
 }
 void Cpu::INX(uint16_t address)
 {
     ++_x;
-    _p.zero = ~_x;
+    _p.zero = !_x;
     _p.negative = _x & 0x80;
     _bus->write(address, _x);
 }
 void Cpu::INY(uint16_t address)
 {
     ++_y;
-    _p.zero = ~_y;
+    _p.zero = !_y;
     _p.negative = _y & 0x80;
     _bus->write(address, _y);
 }
@@ -703,19 +703,19 @@ void Cpu::JSR(uint16_t address)
 void Cpu::LDA(uint16_t address)
 {
     _a = _bus->read(address);
-    _p.zero = ~_a;
+    _p.zero = !_a;
     _p.negative = _a & 0x80;
 }
 void Cpu::LDX(uint16_t address)
 {
     _x = _bus->read(address);
-    _p.zero = ~_x;
+    _p.zero = !_x;
     _p.negative = _x & 0x80;
 }
 void Cpu::LDY(uint16_t address)
 {
     _y = _bus->read(address);
-    _p.zero = ~_y;
+    _p.zero = !_y;
     _p.negative = _y & 0x80;
 }
 void Cpu::LSR(uint16_t address)
@@ -723,13 +723,13 @@ void Cpu::LSR(uint16_t address)
     if (instruction_lookup_table[_opcode].addressing_mode == Accumulator) {
         _p.carry = _a & 0x1;
         _a >>= 1;
-        _p.zero = ~_a;
+        _p.zero = !_a;
         _p.negative = _a & 0x80;
     } else {
         uByte temp = _bus->read(address);
         _p.carry = temp & 0x1;
         temp >>= 1;
-        _p.zero = ~temp;
+        _p.zero = !temp;
         _p.negative = temp & 0x80;
         _bus->write(address, temp);
     }
@@ -738,7 +738,7 @@ void Cpu::NOP(uint16_t) {}
 void Cpu::ORA(uint16_t address)
 {
     _a |= _bus->read(address);
-    _p.zero = ~_a;
+    _p.zero = !_a;
     _p.negative = _a & 0x80;
 }
 void Cpu::PHA(uint16_t) { push(_a); }
@@ -746,7 +746,7 @@ void Cpu::PHP(uint16_t) { push(_p.data); }
 void Cpu::PLA(uint16_t)
 {
     _a = pull();
-    _p.zero = ~_a;
+    _p.zero = !_a;
     _p.negative = _a & 0x80;
 }
 void Cpu::PLP(uint16_t) { _p.data = pull(); }
@@ -759,13 +759,13 @@ void Cpu::ROL(uint16_t address)
     if (instruction_lookup_table[_opcode].addressing_mode == Accumulator) {
         _p.carry = _a & 0x80;
         _a = _a << 1 | old_carry;
-        _p.zero = ~_a;
+        _p.zero = !_a;
         _p.negative = _a & 0x80;
     } else {
         uByte temp = _bus->read(address);
         _p.carry = temp & 0x80;
         temp = temp << 1 | old_carry;
-        _p.zero = ~temp;
+        _p.zero = !temp;
         _p.negative = temp & 0x80;
     }
 }
@@ -778,13 +778,13 @@ void Cpu::ROR(uint16_t address)
     if (instruction_lookup_table[_opcode].addressing_mode == Accumulator) {
         _p.carry = _a & 0x1;
         _a = _a >> 1 | old_carry;
-        _p.zero = ~_a;
+        _p.zero = !_a;
         _p.negative = _a & 0x80;
     } else {
         uByte temp = _bus->read(address);
         _p.carry = temp & 0x1;
         temp = temp >> 1 | old_carry;
-        _p.zero = ~temp;
+        _p.zero = !temp;
         _p.negative = temp & 0x80;
     }
 }
@@ -804,9 +804,9 @@ void Cpu::SBC(uint16_t address)
 {
     // XXX: take care about this function
     uByte b = _bus->read(address);
-    uint16_t result = _a - b - ~_p.carry;
+    uint16_t result = _a - b - !_p.carry;
 
-    _p.zero = ~result;
+    _p.zero = !result;
     _p.negative = result & 0x80;
     _p.carry = result & 0x100;
     _p.overflow = (_a ^ result) & (b ^ result) & 0x80;
@@ -821,32 +821,32 @@ void Cpu::STY(uint16_t address) { _bus->write(address, _y); }
 void Cpu::TAX(uint16_t)
 {
     _x = _a;
-    _p.zero = ~_x;
+    _p.zero = !_x;
     _p.negative = _x & 0x80;
 }
 void Cpu::TAY(uint16_t)
 {
     _y = _a;
-    _p.zero = ~_y;
+    _p.zero = !_y;
     _p.negative = _y & 0x80;
 }
 void Cpu::TSX(uint16_t)
 {
     _x = _sp;
-    _p.zero = ~_x;
+    _p.zero = !_x;
     _p.negative = _x & 0x80;
 }
 void Cpu::TXA(uint16_t)
 {
     _a = _x;
-    _p.zero = ~_a;
+    _p.zero = !_a;
     _p.negative = _a & 0x80;
 }
 void Cpu::TXS(uint16_t) { _sp = _x; }
 void Cpu::TYA(uint16_t)
 {
     _a = _y;
-    _p.zero = ~_a;
+    _p.zero = !_a;
     _p.negative = _a & 0x80;
 }
 void Cpu::XXX(uint16_t) { throw runtime_error{"Cpu: Invalid opcode"}; }
