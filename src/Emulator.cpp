@@ -8,8 +8,6 @@ using namespace gnes;
 
 Emulator::Emulator(): _cpu_bus(&_cartrigde,&_ppu), _cpu(&_cpu_bus,&_interrupt_line,&_log_module), _ppu(&_virtual_screen,&_cartrigde,&_interrupt_line), _cartrigde(&_interrupt_line,&_log_module){}
 
-
-
 void Emulator::run(path p){
     _cartrigde.load(p);
     _cpu.powerUp();
@@ -39,7 +37,9 @@ void Emulator::run(path p){
 
 void Emulator::tick(){
     _cpu.step();
-    _ppu.step();
-    _ppu.step();
-    _ppu.step();
+    for (int i = 0; i != _cpu.getLastStepCount(); ++i){
+        _ppu.step();
+        _ppu.step();
+        _ppu.step();
+    }
 }

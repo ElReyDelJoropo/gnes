@@ -336,6 +336,10 @@ void Cpu::step()
     (this->*instruction_lookup_table[_opcode].func)(address);
 }
 
+int Cpu::getLastStepCount(){
+    return instruction_lookup_table[_opcode].cycle_lenght;
+}
+
 uint16_t Cpu::translateAddress(AddressingMode mode)
 {
     uint16_t temp;
@@ -797,7 +801,7 @@ void Cpu::RTS(uint16_t)
 {
     // TODO: check this instruction size
     _pc = pull16() + 1;
-    assert(strcmp(instruction_lookup_table[_bus->read(_pc) - 3].name, "JSR") ==
+    assert(strcmp(instruction_lookup_table[_bus->read(_pc- 3)].name, "JSR") ==
            0);
 }
 void Cpu::SBC(uint16_t address)

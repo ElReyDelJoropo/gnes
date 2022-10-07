@@ -33,6 +33,8 @@ class Cpu {
     void powerUp();
     void reset();
 
+    int getLastStepCount();
+
   private:
     static constexpr unsigned int CLOCK_FREQUENCY = 1789773;
     static constexpr std::uint16_t NMI_ADDRESS = 0xFFFA;

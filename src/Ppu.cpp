@@ -85,7 +85,6 @@ void Ppu::step()
         _ppu_status.vertical_black = 1;
         if (_ppu_ctrl.raise_nmi)
             _interrupt_line->setInterrupt(InterruptType::Nmi);
-            //TODO: pull nmi flag  
         break;
     default:
         break;
@@ -176,7 +175,8 @@ void Ppu::render()
         break;
     }
 
-    _virtual_screen->setPixel(_cycles, _scanline, color);
+    if (_cycles < 256)
+        _virtual_screen->setPixel(_cycles, _scanline, color);
     incrementX();
 }
 
