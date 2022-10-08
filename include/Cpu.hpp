@@ -1,7 +1,7 @@
 #pragma once
 
 #include "InterruptLine.hpp"
-#include "LogModule.hpp"
+#include "Debugger.hpp"
 #include "CpuBus.hpp"
 #include "types.hpp"
 
@@ -27,13 +27,13 @@ enum AddressingMode {
 
 class Cpu {
   public:
-    Cpu(CpuBus *, InterruptLine *, LogModule *);
+    Cpu(CpuBus *, InterruptLine *, Debugger *);
 
     void step();
     void powerUp();
     void reset();
 
-    int getLastStepCount();
+    int getLastStepCount() const;
 
   private:
     static constexpr unsigned int CLOCK_FREQUENCY = 1789773;
@@ -74,7 +74,7 @@ class Cpu {
 
     CpuBus *_bus;
     InterruptLine *_interrupt_line;
-    LogModule *_log_module;
+    Debugger *_debugger;
 
 
     std::uint16_t translateAddress(AddressingMode);

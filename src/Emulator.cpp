@@ -6,7 +6,7 @@ using std::filesystem::path;
 
 using namespace gnes;
 
-Emulator::Emulator(): _cpu_bus(&_cartrigde,&_ppu), _cpu(&_cpu_bus,&_interrupt_line,&_log_module), _ppu(&_virtual_screen,&_cartrigde,&_interrupt_line), _cartrigde(&_interrupt_line,&_log_module){}
+Emulator::Emulator(): _cpu_bus(&_cartrigde,&_ppu), _cpu(&_cpu_bus,&_interrupt_line,&_debugger), _ppu(&_virtual_screen,&_cartrigde,&_interrupt_line), _cartrigde(&_interrupt_line,&_debugger), _debugger(&_cpu,&_cartrigde){}
 
 void Emulator::run(path p){
     _cartrigde.load(p);
@@ -16,7 +16,7 @@ void Emulator::run(path p){
     //_ppu.dumpPatternTable();
 
     sf::RenderWindow w(sf::VideoMode(VirtualScreen::ScreenWidth,VirtualScreen::ScreenHeight),"Gnes");
-    //w.setFramerateLimit(60);
+    w.setFramerateLimit(60);
 
     while(w.isOpen()){
         sf::Event e;

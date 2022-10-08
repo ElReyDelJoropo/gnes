@@ -3,7 +3,7 @@
 #include "Cpu.hpp"
 #include "CpuBus.hpp"
 #include "InterruptLine.hpp"
-#include "LogModule.hpp"
+#include "Debugger.hpp"
 #include "Ppu.hpp"
 #include "VirtualScreen.hpp"
 
@@ -20,7 +20,7 @@ namespace gnes{
             Ppu _ppu;
             Cartrigde _cartrigde;
             InterruptLine _interrupt_line;
-            LogModule _log_module;
+            Debugger _debugger;
             VirtualScreen _virtual_screen;
 
             void tick();

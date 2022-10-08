@@ -1,6 +1,6 @@
 #pragma once
 #include "InterruptLine.hpp"
-#include "LogModule.hpp"
+#include "Debugger.hpp"
 #include "Mapper.hpp"
 #include "types.hpp"
 
@@ -29,7 +29,7 @@ struct RomInfo {
 
 class Cartrigde {
   public:
-    Cartrigde(InterruptLine *, LogModule *);
+    Cartrigde(InterruptLine *, Debugger *);
     void load(std::filesystem::path &);
 
     [[nodiscard]] uByte readPrg(std::uint16_t address) const;
@@ -39,7 +39,7 @@ class Cartrigde {
 
   private:
     InterruptLine *_interrupt_line;
-    LogModule *_log_module;
+    Debugger *_debugger;
     std::unique_ptr<Mapper> _mapper;
     RomInfo _rom_info;
     std::vector<uByte> _raw_data;

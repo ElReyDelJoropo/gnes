@@ -305,8 +305,8 @@ const struct Cpu::instruction Cpu::instruction_lookup_table[0x100] = {
     {"XXX", &Cpu::XXX, Implied, 0},
 };
 
-Cpu::Cpu(CpuBus *b, InterruptLine *i, LogModule *l)
-    : _bus(b), _interrupt_line(i), _log_module(l)
+Cpu::Cpu(CpuBus *b, InterruptLine *i, Debugger *db)
+    : _bus(b), _interrupt_line(i), _debugger(db)
 {
     powerUp();
     reset();
@@ -336,7 +336,7 @@ void Cpu::step()
     (this->*instruction_lookup_table[_opcode].func)(address);
 }
 
-int Cpu::getLastStepCount(){
+int Cpu::getLastStepCount() const{
     return instruction_lookup_table[_opcode].cycle_lenght;
 }
 
@@ -383,7 +383,7 @@ void Cpu::handleInterrupt()
 {
     uint16_t vector_address;
     InterruptType interrupt = _interrupt_line->getInterrupt();
-    // Should i put reset as interrupt type?
+
     if (interrupt == InterruptType::None)
         return;
 
@@ -395,11 +395,11 @@ void Cpu::handleInterrupt()
         vector_address = NMI_ADDRESS;
     } else {
         // Nesdev wiki says that reset is like an interrupt, SP decrements by 3
-        // and registers stay unchanged, therefore, i included here
+        // and registers stay unchanged, therefore, i included it here
         vector_address = RESET_ADDRESS;
     }
 
-    _p.interrupt_disable = 1;
+    _p.interrupt_disable = true;
     push16(_pc);
     push(_p.data);
     _pc = _bus->read16(vector_address);
@@ -446,7 +446,7 @@ bool Cpu::isPageCrossed(uint16_t a, uint16_t b)
 
 void Cpu::dumpCpuState(uint16_t address)
 {
-    _log_module->getBuffer(BufferID::CpuID)
+    _debugger->cpuStream()
         << assembleInstruction(instruction_lookup_table[_opcode].name, address)
         << '\t' << setfill('0') << "PC: $" << setw(4) << hex << (int)_pc << '\t'
         << "A: $" << setw(2) << (int)_a << '\t' << "X: $" << setw(2) << (int)_x
@@ -460,16 +460,16 @@ string Cpu::assembleInstruction(const char *name, uint16_t address) const
 
     switch (instruction_lookup_table[_opcode].addressing_mode) {
     case ZeroPage:
-        os << name << " $" << setw(4) << hex << address;
+        os << name << " $" << setw(4) << hex << address << setw(4) << ' ';
         break;
     case ZeroPageX:
-        os << name << " $" << setw(4) << hex << address << ", X";
+        os << name << " $" << setw(4) << setfill('0') << hex << address << ", X";
         break;
     case ZeroPageY:
         os << name << " $" << setw(4) << hex << address << ", Y";
         break;
     case Absolute:
-        os << name << " $" << setw(4) << hex << address;
+        os << name << " $" << setw(4) << setfill('0') << hex << address << setw(4) << setfill(' ') << ' ';
         break;
     case AbsoluteX:
         os << name << " $" << setw(4) << hex << address << ", X";
@@ -491,15 +491,15 @@ string Cpu::assembleInstruction(const char *name, uint16_t address) const
         break;
     case Immediate:
         os << name << " #"
-           << "$" << setw(3) << hex << (int)_bus->read(address);
+           << "$" << setw(3) << hex << (int)_bus->read(address) << setw(4) << ' ';
         break;
     case Relative:
         os << name << " " << std::showpos << setw(4)
-           << static_cast<int>(static_cast<Byte>(address));
+           << static_cast<int>(static_cast<Byte>(address)) << setw(4) << ' ';
         break;
     case Implied:
     case Accumulator:
-        os << name << setw(6) << ' ';
+        os << name << setw(10) << ' ';
         break;
     }
     return os.str();

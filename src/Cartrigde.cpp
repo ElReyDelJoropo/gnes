@@ -1,5 +1,5 @@
 #include "Cartrigde.hpp"
-#include "LogModule.hpp"
+#include "Debugger.hpp"
 #include "Mapper.hpp"
 #include "mappers/Mapper_000.hpp"
 
@@ -23,11 +23,10 @@ using std::runtime_error;
 
 using namespace gnes;
 
-Cartrigde::Cartrigde(InterruptLine *line, LogModule *logm)
-    : _interrupt_line(line), _log_module(logm), _rom_info{}
+Cartrigde::Cartrigde(InterruptLine *line, Debugger *db)
+    : _interrupt_line(line), _debugger(db), _rom_info{}
 {
 }
-
 uByte Cartrigde::readPrg(uint16_t a) const { return _mapper->readPrg(a); }
 uByte Cartrigde::readChr(uint16_t a) const { return _mapper->readChr(a); }
 void Cartrigde::writePrg(uint16_t a, uByte b) { _mapper->writePrg(a, b); }
@@ -108,7 +107,7 @@ std::unique_ptr<Mapper> Cartrigde::makeMapper()
 }
 void Cartrigde::dumpRomInfo()
 {
-    _log_module->getBuffer(BufferID::CartrigdeID)
+    _debugger->cartrigdeStream() 
         << "+++ ROM INFO +++\n"
         << "PRG ROM units: " << setw(2) << _rom_info.PRG_ROM_units << '\n'
         << "chr rom units: " << setw(2) << _rom_info.CHR_ROM_units << '\n'

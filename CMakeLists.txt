@@ -27,6 +27,7 @@ set(SOURCES
     "src/Ppu.cpp"
     "src/VirtualScreen.cpp"
     "src/PpuBus.cpp"
+    "src/Debugger.cpp"
     )
 set(CMAKE_EXPORT_COMPILE_COMMANDS true)
 

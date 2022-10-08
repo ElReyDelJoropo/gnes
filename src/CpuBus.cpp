@@ -50,15 +50,18 @@ void CpuBus::write(uint16_t address, uByte b){
     // Internal ram
     case 0x0 ... 0x1FFF:
         _ram[address & 0x7FF] = b;
+        break;
     // PPU registers
     case 0x2000 ... 0x3FFF:
-        _ppu->write(address,b);
+        _ppu->write(address & 0x2007,b);
+        break;
     // APU
     case 0x4000 ... 0x401F:
         break;
     // Cartrigde space
     case 0x4020 ... 0xFFFF:
         _cartrigde->writePrg(address,b);
+        break;
     default:
         break;
     }
