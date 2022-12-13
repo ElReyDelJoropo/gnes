@@ -5,6 +5,7 @@
 #include "CpuBus.hpp"
 #include "types.hpp"
 
+#include <sstream>
 #include <string>
 
 namespace gnes {
@@ -26,6 +27,7 @@ enum AddressingMode {
 };
 
 class Cpu {
+    friend class Debugger;
   public:
     Cpu(CpuBus *, InterruptLine *, Debugger *);
 

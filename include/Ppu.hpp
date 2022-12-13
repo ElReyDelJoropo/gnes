@@ -1,5 +1,6 @@
 #pragma once
 #include "Cartrigde.hpp"
+#include "Debugger.hpp"
 #include "InterruptLine.hpp"
 #include "PpuBus.hpp"
 #include "VirtualScreen.hpp"
@@ -20,6 +21,7 @@ enum PpuRegister {
 enum PpuRenderingState { PreRender, Render, PostRender, VerticalBlank };
 
 class Ppu {
+    friend class Debugger;
   public:
       Ppu(VirtualScreen *vs, Cartrigde *c, InterruptLine *il);
     void step();

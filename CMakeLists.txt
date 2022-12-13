@@ -28,6 +28,7 @@ set(SOURCES
     "src/VirtualScreen.cpp"
     "src/PpuBus.cpp"
     "src/Debugger.cpp"
+    "src/debugger/MemoryTools.cpp"
     )
 set(CMAKE_EXPORT_COMPILE_COMMANDS true)
 

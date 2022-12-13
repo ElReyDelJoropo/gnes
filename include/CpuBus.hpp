@@ -1,5 +1,6 @@
 #pragma once
 #include "Cartrigde.hpp"
+#include "Debugger.hpp"
 #include "Ppu.hpp"
 #include "types.hpp"
 
@@ -8,8 +9,9 @@
 namespace gnes {
 
 class CpuBus {
+    friend class Debugger;
   public:
-      CpuBus(Cartrigde *, Ppu *);
+    CpuBus(Cartrigde *, Ppu *);
     uByte read(std::uint16_t address);
     std::uint16_t read16(std::uint16_t address);
     std::uint16_t read16Bug(std::uint16_t address);

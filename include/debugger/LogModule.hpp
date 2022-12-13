@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 
-namespace gnes {
+namespace gnes::debug {
 // enum class BufferID {Cpu, Ppu, Apu, Cartrigde, None };
 
 enum BufferID { CpuID, PpuID, ApuID, CartrigdeID };

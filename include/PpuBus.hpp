@@ -2,12 +2,14 @@
 #include <array>
 
 #include "Cartrigde.hpp"
+#include "Debugger.hpp"
 #include "types.hpp"
 
 namespace gnes {
 
 
 class PpuBus {
+    friend class Debugger;
     public:
         PpuBus(Cartrigde *c);
         [[nodiscard]] uByte read(std::uint16_t address) const;
